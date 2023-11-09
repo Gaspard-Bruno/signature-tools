@@ -34,7 +34,7 @@ class AdjustBrightness:
 
     def img_adjust_brightness(self, image, factor):
         output = adjust_brightness(image, np.clip(factor, 0.0, 1.0), clip_output=True)
-        output = torch.stack([output])
+        # output = torch.stack([output])
         return (output,)
 
 
