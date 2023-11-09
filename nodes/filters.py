@@ -56,6 +56,7 @@ class CannyEdge:
         image = image.transpose(3, 1)
         _, x_canny = canny(image, low_threshold=low_threshold, high_threshold=high_threshold)
         output = tensor_to_image(x_canny.byte())
+        output = torch.stack([output])
         #output = output.transpose(3, 1)
         return (output,)
 
