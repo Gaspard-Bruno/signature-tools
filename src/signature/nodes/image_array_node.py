@@ -85,7 +85,7 @@ class Example:
     RETURN_TYPES = ("IMAGE",)
     #RETURN_NAMES = ("image_output_name",)
 
-    FUNCTION = "test"
+    FUNCTION = "Load from Web"
 
     #OUTPUT_NODE = False
 
@@ -102,11 +102,6 @@ class Example:
         image = 1.0 - image
         return (image,)
 
-# A dictionary that contains the friendly/humanly readable titles for the nodes
-NODE_DISPLAY_NAME_MAPPINGS = {
-    "IMAGE_FROM_WEB_Preprocessor": "Load from Web"
-}
-
 NODE_CLASS_MAPPINGS = {
-    "IMAGE_FROM_WEB_Preprocessor": Example,
+    "Load from Web": Example,
 }
