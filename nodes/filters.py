@@ -55,7 +55,7 @@ class CannyEdge:
         image = image.transpose(3, 1)
         _, output = canny(image, low_threshold=low_threshold, high_threshold=high_threshold)
         #output = tensor_to_image(x_canny.byte())
-        output = output[0].transpose(0, 2)
+        output = output[0].transpose(0,2).transpose(0,1)
         return (output,)
 
 
