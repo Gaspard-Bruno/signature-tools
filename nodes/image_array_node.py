@@ -73,9 +73,7 @@ class AdjustHUE:
 
     def process(self, image: torch.Tensor, factor: float):
         image = image.transpose(3, 1)
-        adjust_hue(image, factor * 3.141516)
-
-        output = adjust_saturation(image, factor)
+        output = adjust_hue(image, factor * 3.141516)
         output = output.transpose(3, 1)
         return (output,)
 
