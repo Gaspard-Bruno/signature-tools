@@ -12,7 +12,7 @@ class ImageFromWeb:
     FUNCTION = "image_from_web"
     CATEGORY = "Signature/Image"
     def image_from_web(self, url):
-        np_array = ImageArray.from_web(url).get_float_value
+        np_array = ImageArray.from_web(url).get_value()
         return img_np_to_tensor(np_array)
 
 
