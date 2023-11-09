@@ -1,0 +1,8 @@
+boto3 == 1.*
+einops==0.7.0
+httpx==0.25.1
+imageio==2.32.0
+numpy==1.26.1
+opencv-python==4.8.1.78
+rich==13.6.0
+typed-json-dataclass==1.2.1
