@@ -10,10 +10,10 @@ class GaussianBlur:
     @classmethod
     def INPUT_TYPES(s): # type: ignore
         return {"required": {"image": ("IMAGE",),
-                             "kernel_width": ("INT", {"default": 3}),
-                             "kernel_height": ("INT", {"default": 3}),
-                             "sigma_x": ("FLOAT", {"default": 1.5}),
-                             "sigma_y": ("FLOAT", {"default": 1.5}),
+                             "kernel_width": ("INT", {"default": 13}),
+                             "kernel_height": ("INT", {"default": 13}),
+                             "sigma_x": ("FLOAT", {"default": 10.5}),
+                             "sigma_y": ("FLOAT", {"default": 10.5}),
                              }
                 }
     RETURN_TYPES = ("IMAGE",)
@@ -115,7 +115,7 @@ class Laplacian:
 
 NODE_CLASS_MAPPINGS = {
     "Gaussian Blur": GaussianBlur,
-    "UnsharpMask": UnsharpMask,
+    "Unsharp Mask": UnsharpMask,
     "Canny Edge": CannyEdge,
     "Laplacian": Laplacian,
 }
