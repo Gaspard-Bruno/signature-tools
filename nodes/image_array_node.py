@@ -24,7 +24,10 @@ class AdjustBrightness:
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore
-        return {"required": {"image": ("IMAGE"), "factor": ("FLOAT", {"default": 0.5})}}
+        return {"required": {"image": ("IMAGE",),
+                             "factor": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
+                            }
+                }
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "img_adjust_brightness"
     CATEGORY = IMAGE_CAT
