@@ -8,12 +8,13 @@ class ImageFromWeb:
     @classmethod
     def INPUT_TYPES(s): # type: ignore
         return {"required": {"url": ("STRING", {"default": "URL HERE"})}}
-    RETURN_TYPES = ("IMAGE")
+    RETURN_TYPES = ("IMAGE",)
     FUNCTION = "image_from_web"
     CATEGORY = "Signature/Image"
     def image_from_web(self, url):
         np_array = ImageArray.from_web(url).get_value()
-        return img_np_to_tensor(np_array)
+        image = img_np_to_tensor(np_array)
+        return (image,)
 
 
 NODE_CLASS_MAPPINGS = {
