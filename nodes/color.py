@@ -17,7 +17,9 @@ class RBG2Gray:
     CATEGORY = COLOR_CAT
 
     def process(self, image: torch.Tensor):
+        image = image.transpose(3, 1)
         output = rgb_to_grayscale(image)
+        output = output.transpose(3, 1)
         return (output,)
 
 class RGBA2RGB:
@@ -34,7 +36,9 @@ class RGBA2RGB:
     CATEGORY = COLOR_CAT
 
     def process(self, image: torch.Tensor):
+        image = image.transpose(3, 1)
         output = rgba_to_rgb(image)
+        output = output.transpose(3, 1)
         return (output,)
 
 NODE_CLASS_MAPPINGS = {
