@@ -66,6 +66,7 @@ class Laplacian:
     def INPUT_TYPES(s): # type: ignore
         return {"required": {"image": ("IMAGE",),
                              "kernel_width": ("INT", {"default": 3}),
+                             "kernel_height": ("INT", {"default": 3}),
                              }
                 }
     RETURN_TYPES = ("IMAGE",)
