@@ -1,13 +1,12 @@
-find_in_conda_env(){
-    conda env list | grep "${@}" >/dev/null 2>/dev/null
-}
-
-eval "$(conda shell.bash hook)"
-if find_in_conda_env ".*signature.*" ; then
-    conda activate signature;
+#!/bin/bash
+if [ -e "../../../python_embeded/python" ]; then
+    echo Custom Python build of ComfyUI standalone executable detected:
+    echo "$(readlink -f "../../python_embeded/python")"
+    echo --------------------------------------------------
+    ../../../python_embeded/python pip3 install -e . --no-cache-dir
 else
-    conda create --name "signature" python=3.10 -y;
-    conda activate signature;
+    echo "Custom Python not found. Use system's Python executable instead:"
+    echo "$(which python3)"
+    echo --------------------------------------------------
+    pip3 install -e . --no-cache-dir
 fi
-
-pip3 install -e . --no-cache-dir
