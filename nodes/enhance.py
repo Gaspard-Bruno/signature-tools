@@ -1,6 +1,6 @@
 from .utils import *
 from .categories import ENHANCE_CAT
-from kornia.enhance import adjust_brightness, adjust_saturation, equalize
+from kornia.enhance import adjust_brightness, adjust_saturation, equalize, equalize_clahe
 import torch
 
 class AdjustBrightness:
@@ -62,9 +62,29 @@ class Equalize:
         return (output,)
 
 
+class EqualizeClahe:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s): # type: ignore
+        return {"required": {"image": ("IMAGE",),
+                            }
+                }
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "process"
+    CATEGORY = ENHANCE_CAT
+
+    def process(self, image: torch.Tensor):
+        image = image.transpose(3, 1)
+        output = equalize_clahe(image)
+        output = output.transpose(3, 1)
+        return (output,)
+
 
 NODE_CLASS_MAPPINGS = {
     "Adjust Brightness": AdjustBrightness,
     "Adjust Saturation": AdjustSaturation,
     "Equalize": Equalize,
+    "Equalize Clahe": EqualizeClahe,
 }
