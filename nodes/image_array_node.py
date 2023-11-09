@@ -32,7 +32,7 @@ class AdjustBrightness:
     FUNCTION = "process"
     CATEGORY = IMAGE_CAT
 
-    def process(self, image, factor):
+    def process(self, image: torch.Tensor, factor: float):
         output = adjust_brightness(image, factor, clip_output=True)
         return (output,)
 
@@ -51,8 +51,10 @@ class AdjustSaturation:
     FUNCTION = "process"
     CATEGORY = IMAGE_CAT
 
-    def process(self, image, factor):
+    def process(self, image: torch.Tensor, factor: float):
+        image = image.transpose(3, 1)
         output = adjust_saturation(image, factor)
+        output = output.transpose(3, 1)
         return (output,)
 
 NODE_CLASS_MAPPINGS = {
