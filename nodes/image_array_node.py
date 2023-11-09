@@ -33,8 +33,7 @@ class AdjustBrightness:
     CATEGORY = IMAGE_CAT
 
     def process(self, image, factor):
-        output = adjust_brightness(image, np.clip(factor, 0.0, 1.0), clip_output=True)
-        # output = torch.stack([output])
+        output = adjust_brightness(image, factor, clip_output=True)
         return (output,)
 
 
@@ -45,7 +44,7 @@ class AdjustSaturation:
     @classmethod
     def INPUT_TYPES(s): # type: ignore
         return {"required": {"image": ("IMAGE",),
-                             "factor": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
+                             "factor": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.01}),
                             }
                 }
     RETURN_TYPES = ("IMAGE",)
@@ -53,8 +52,7 @@ class AdjustSaturation:
     CATEGORY = IMAGE_CAT
 
     def process(self, image, factor):
-        output = adjust_saturation(image, np.clip(factor, 0.0, 1.0))
-        # output = torch.stack([output])
+        output = adjust_saturation(image, factor)
         return (output,)
 
 NODE_CLASS_MAPPINGS = {
