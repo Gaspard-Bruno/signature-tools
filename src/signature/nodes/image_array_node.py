@@ -89,7 +89,7 @@ class Example:
 
     #OUTPUT_NODE = False
 
-    CATEGORY = "Example"
+    CATEGORY = "Signature/Image"
 
     def test(self, image, string_field, int_field, float_field, print_to_screen):
         if print_to_screen == "enable":
@@ -104,7 +104,7 @@ class Example:
 
 # A dictionary that contains the friendly/humanly readable titles for the nodes
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "IMAGE_FROM_WEB_Preprocessor": "Signature/Example"
+    "IMAGE_FROM_WEB_Preprocessor": "Load from Web"
 }
 
 NODE_CLASS_MAPPINGS = {
