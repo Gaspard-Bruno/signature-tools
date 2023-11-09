@@ -9,7 +9,7 @@ import imageio as iio
 import numpy as np
 from numpy.typing import NDArray
 from PIL import Image
-from signature.logger import console
+from ..logger import console
 
 class ImageArray(np.ndarray):
     def __new__(cls, array: NDArray[Any]):

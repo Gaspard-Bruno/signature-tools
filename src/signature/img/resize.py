@@ -3,7 +3,7 @@ from enum import Enum, unique
 import cv2
 import numpy as np
 from numpy.typing import NDArray
-from signature.img.image_array import ImageArray
+from .image_array import ImageArray
 
 
 # * reference: https://docs-flutter-io.firebaseapp.com/flutter/painting/BoxFit-class.html
