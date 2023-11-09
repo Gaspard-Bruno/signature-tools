@@ -13,7 +13,7 @@ class ImageFromWeb:
     CATEGORY = "Signature/Image"
     def image_from_web(self, url):
         img_arr = ImageArray.from_web(url)
-        image = image_array_to_torch(img_arr)
+        image = img_np_to_tensor([img_arr.get_value()])
         return (image,)
 
 
