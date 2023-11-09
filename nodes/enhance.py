@@ -66,4 +66,5 @@ class Equalize:
 NODE_CLASS_MAPPINGS = {
     "Adjust Brightness": AdjustBrightness,
     "Adjust Saturation": AdjustSaturation,
+    "Equalize": Equalize,
 }
