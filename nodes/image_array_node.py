@@ -10,7 +10,7 @@ class ImageFromWeb:
         return {"required": {"url": ("STRING", {"default": "URL HERE"})}}
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "image_from_web"
-    CATEGORY = "🛠️ Signature.ai Tools/🖼️ Image"
+    CATEGORY = "🔵 Signature.ai Tools/🖼️ Image"
     def image_from_web(self, url):
         img_arr = ImageArray.from_web(url)
         image = img_np_to_tensor([img_arr.get_value()])
