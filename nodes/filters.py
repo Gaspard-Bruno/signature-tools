@@ -52,10 +52,8 @@ class CannyEdge:
     CATEGORY = FILTER_CAT
 
     def process(self, image: torch.Tensor, low_threshold, high_threshold):
-
         image = image.transpose(3, 1)
-        output = canny(image, low_threshold=low_threshold, high_threshold=high_threshold)
-        output = torch.from_numpy(output)
+        _, output = canny(image, low_threshold=low_threshold, high_threshold=high_threshold)
         output = output.transpose(3, 1)
         return (output,)
 
