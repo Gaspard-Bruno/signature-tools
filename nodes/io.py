@@ -1,6 +1,6 @@
 from  ..src.signature.img.image_array import ImageArray
 from .utils import *
-from .categories import CORE_CAT
+from .categories import IO_CAT
 
 class ImageFromWeb:
     def __init__(self):
@@ -11,7 +11,7 @@ class ImageFromWeb:
         return {"required": {"url": ("STRING", {"default": "URL HERE"})}}
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "process"
-    CATEGORY = CORE_CAT
+    CATEGORY = IO_CAT
     def process(self, url):
         img_arr = ImageArray.from_web(url)
         image = img_np_to_tensor([img_arr.get_value()])

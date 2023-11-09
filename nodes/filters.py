@@ -1,7 +1,6 @@
 from .utils import *
 from .categories import FILTER_CAT
 from kornia.filters import gaussian_blur2d, canny
-from kornia import tensor_to_image
 import torch
 
 class GaussianBlur:
@@ -56,8 +55,7 @@ class CannyEdge:
         image = image.transpose(3, 1)
         _, output = canny(image, low_threshold=low_threshold, high_threshold=high_threshold)
         #output = tensor_to_image(x_canny.byte())
-        #output = torch.stack([output])
-        #output = output.transpose(3, 1)
+        output = output[0].transpose(0, 2)
         return (output,)
 
 
