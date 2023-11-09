@@ -14,7 +14,7 @@ class ImageFromWeb:
     def image_from_web(self, url):
         np_array = ImageArray.from_web(url).get_value()
         image = img_np_to_tensor(np_array)
-        return (image,)
+        return (np_array,)
 
 
 NODE_CLASS_MAPPINGS = {
