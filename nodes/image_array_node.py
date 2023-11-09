@@ -1,5 +1,5 @@
 from  ..src.signature.img.image_array import ImageArray
-from .utils import img_np_to_tensor
+from .utils import *
 
 class ImageFromWeb:
     def __init__(self):
@@ -13,8 +13,8 @@ class ImageFromWeb:
     CATEGORY = "Signature/Image"
     def image_from_web(self, url):
         np_array = ImageArray.from_web(url).get_value()
-        image = img_np_to_tensor(np_array)
-        return (np_array,)
+        image = numpy_to_tensor(np_array)
+        return (image,)
 
 
 NODE_CLASS_MAPPINGS = {
