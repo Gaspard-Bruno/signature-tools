@@ -1,6 +1,6 @@
 from .utils import *
 from .categories import ENHANCE_CAT
-from kornia.enhance import adjust_brightness, adjust_saturation
+from kornia.enhance import adjust_brightness, adjust_saturation, equalize
 import torch
 
 class AdjustBrightness:
@@ -42,6 +42,24 @@ class AdjustSaturation:
         output = output.transpose(3, 1)
         return (output,)
 
+class Equalize:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s): # type: ignore
+        return {"required": {"image": ("IMAGE",),
+                            }
+                }
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "process"
+    CATEGORY = ENHANCE_CAT
+
+    def process(self, image: torch.Tensor):
+        image = image.transpose(3, 1)
+        output = equalize(image)
+        output = output.transpose(3, 1)
+        return (output,)
 
 
 
