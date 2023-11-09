@@ -205,18 +205,7 @@ class ImageArray(np.ndarray):
         return output
 
     def get_float_value(self, color_space: str | None = None) -> NDArray[np.float32]:
-        output = self.copy()
-
-        if color_space is not None:
-            color = color_space.upper()
-            if color == "RGBA":
-                output = self.__get_rgba()
-            if color == "RGB":
-                output = self.__get_rgb()
-            if color == "L":
-                output = self.__get_l()
-
-        return (output / 255.0).astype(np.float32)
+        return (self.get_value(color_space=color_space) / 255.0).astype(np.float32)
 
     def __get_rgba(self) -> NDArray[np.uint8]:
         if self.channels != 4:

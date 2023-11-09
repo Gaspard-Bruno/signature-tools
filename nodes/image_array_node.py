@@ -12,8 +12,8 @@ class ImageFromWeb:
     FUNCTION = "image_from_web"
     CATEGORY = "Signature/Image"
     def image_from_web(self, url):
-        np_array = ImageArray.from_web(url).get_value()
-        image = numpy_to_tensor(np_array)
+        img_arr = ImageArray.from_web(url)
+        image = image_array_to_torch(img_arr)
         return (image,)
 
 
