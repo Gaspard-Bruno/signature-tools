@@ -1,4 +1,5 @@
-# from signature.img.image_array import ImageArray
+from  ..src.signature.img.image_array import ImageArray
+
 
 # class IMAGE_FROM_WEB_Preprocessor:
 #     @classmethod
