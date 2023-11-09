@@ -1,9 +1,9 @@
 from .utils import *
 from .categories import COLOR_CAT
-from kornia.color import rgb_to_grayscale, rgba_to_rgb
+from kornia.color import rgb_to_hls, rgb_to_hsv
 import torch
 
-class RBG2Gray:
+class RBGtoHLS:
     def __init__(self):
         pass
 
@@ -16,11 +16,11 @@ class RBG2Gray:
 
     def process(self, image: torch.Tensor):
         image = image.transpose(3, 1)
-        output = rgb_to_grayscale(image)
+        output = rgb_to_hls(image)
         output = output.transpose(3, 1)
         return (output,)
 
-class RGBA2RGB:
+class RGBtoHSV:
     def __init__(self):
         pass
 
@@ -33,11 +33,11 @@ class RGBA2RGB:
 
     def process(self, image: torch.Tensor):
         image = image.transpose(3, 1)
-        output = rgba_to_rgb(image)
+        output = rgb_to_hsv(image)
         output = output.transpose(3, 1)
         return (output,)
 
 NODE_CLASS_MAPPINGS = {
-    "RGB to Grayscale": RBG2Gray,
-    "RGBA to RGB": RGBA2RGB,
+    "RGB to HLS": RBGtoHLS,
+    "RGBA to HSV": RGBtoHSV,
 }
