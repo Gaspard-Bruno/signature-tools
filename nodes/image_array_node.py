@@ -57,8 +57,33 @@ class AdjustSaturation:
         output = output.transpose(3, 1)
         return (output,)
 
+class AdjustHUE:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s): # type: ignore
+        return {"required": {"image": ("IMAGE",),
+                             "factor": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.01}),
+                            }
+                }
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "process"
+    CATEGORY = IMAGE_CAT
+
+    def process(self, image: torch.Tensor, factor: float):
+        image = image.transpose(3, 1)
+        adjust_hue(image, factor * 3.141516)
+
+        output = adjust_saturation(image, factor)
+        output = output.transpose(3, 1)
+        return (output,)
+
+
+
 NODE_CLASS_MAPPINGS = {
     "Load from Web": ImageFromWeb,
     "Adjust Brightness": AdjustBrightness,
     "Adjust Saturation": AdjustSaturation,
+    "Adjust Hue": AdjustHUE,
 }
