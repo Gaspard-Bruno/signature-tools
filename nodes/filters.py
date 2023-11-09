@@ -54,7 +54,6 @@ class CannyEdge:
     def process(self, image: torch.Tensor, low_threshold, high_threshold):
         image = image.transpose(3, 1)
         _, output = canny(image, low_threshold=low_threshold, high_threshold=high_threshold)
-        #output = tensor_to_image(x_canny.byte())
         output = output[0].transpose(0,2).transpose(0,1)
         return (output,)
 
@@ -73,7 +72,7 @@ class Laplacian:
     FUNCTION = "process"
     CATEGORY = FILTER_CAT
 
-    def process(self, image: torch.Tensor, kernel_width, kernel_height, sigma_x, sigma_y):
+    def process(self, image: torch.Tensor, kernel_width, kernel_height):
         if kernel_width % 2 == 0:
             kernel_width += 1
         if kernel_height % 2 == 0:
