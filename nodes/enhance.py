@@ -68,8 +68,7 @@ class EqualizeClahe:
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore
-        return {"required": {"image": ("IMAGE",),
-                            }
+        return {"required": {"image": ("IMAGE",)}
                 }
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "process"
