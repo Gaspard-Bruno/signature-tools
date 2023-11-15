@@ -10,30 +10,29 @@ class GaussianBlur:
     @classmethod
     def INPUT_TYPES(s): # type: ignore
         return {"required": {"image": ("IMAGE",),
-                             "kernel_width": ("INT", {"default": 13}),
-                             "kernel_height": ("INT", {"default": 13}),
-                             "sigma_x": ("FLOAT", {"default": 10.5}),
-                             "sigma_y": ("FLOAT", {"default": 10.5}),
+                             "radius": ("INT", {"default": 13}),
+                             "sigma": ("FLOAT", {"default": 10.5}),
+                             "interations": ("INT", {"default": 1}),
                              }
                 }
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "process"
     CATEGORY = FILTER_CAT
 
-    def process(self, image: torch.Tensor, kernel_width, kernel_height, sigma_x, sigma_y):
-        if kernel_width % 2 == 0:
-            kernel_width += 1
-        if kernel_height % 2 == 0:
-            kernel_height += 1
-        in_kernel_size = (kernel_width, kernel_height)
-        in_sigma = (sigma_x, sigma_y)
-        image = image.transpose(3, 1)
-        output = gaussian_blur2d(image,
-                                 kernel_size=in_kernel_size,
-                                 sigma=in_sigma,
-                                 border_type='reflect',
-                                 separable=True)
-        output = output.transpose(3, 1)
+    def process(self, image: torch.Tensor, radius, sigma, interations):
+        if radius % 2 == 0:
+            radius += 1
+        in_kernel_size = (radius, radius)
+        in_sigma = (sigma, sigma)
+        step = image.transpose(3, 1)
+        interations = max(1, interations)
+        for _ in range(interations):
+            step = gaussian_blur2d(step,
+                                    kernel_size=in_kernel_size,
+                                    sigma=in_sigma,
+                                    border_type='reflect',
+                                    separable=True)
+        output = step.transpose(3, 1)
         return (output,)
 
 class UnsharpMask:

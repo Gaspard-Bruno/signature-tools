@@ -1,4 +1,4 @@
-from .nodes import enhance, color, filters, io, transfrom
+from .nodes import enhance, color, filters, io, transfrom, models
 
 NODE_CLASS_MAPPINGS = {
     **io.NODE_CLASS_MAPPINGS,
@@ -6,4 +6,5 @@ NODE_CLASS_MAPPINGS = {
     **enhance.NODE_CLASS_MAPPINGS,
     **filters.NODE_CLASS_MAPPINGS,
     **transfrom.NODE_CLASS_MAPPINGS,
+    **models.NODE_CLASS_MAPPINGS,
 }
