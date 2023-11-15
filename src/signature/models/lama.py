@@ -7,14 +7,17 @@ from .helper import (
 )
 LAMA_MODEL_URL = "https://github.com/Sanster/models/releases/download/add_big_lama/big-lama.pt"
 LAMA_MODEL_MD5 = "e3aa4aaa15225a33ec84f9f4bc47e500"
+import torch
+import kornia
+import torch.nn.functional as F
 
 class Lama():
     def __init__(self, device: str|None = None):
         self.device = device or ('cuda' if torch.cuda.is_available() else 'cpu')
+        # Assuming load_jit_model and other constants are defined elsewhere
         self.model = load_jit_model(LAMA_MODEL_URL, self.device, LAMA_MODEL_MD5).eval()
 
     def forward(self, image: torch.Tensor, mask: torch.Tensor):
-
         # Resize image and mask with padding
         resized_image, padding = self.resize_with_padding(image)
         resized_mask, _ = self.resize_with_padding(mask)
@@ -40,6 +43,11 @@ class Lama():
         max_dimension = max(image.shape[1], image.shape[2])
 
         # Calculate padding
+        pad_x = max(0, (max_dimension - image.shape[2]) // 2)
+        pad_y = max(0, (max_dimension - image.shape[1]) // 2)
+
+        # Ensure that the dimensions are multiples of 64
+        max_dimension = ((max_dimension - 1) // 64 + 1) * 64
         pad_x = max(0, (max_dimension - image.shape[2]) // 2)
         pad_y = max(0, (max_dimension - image.shape[1]) // 2)
 
