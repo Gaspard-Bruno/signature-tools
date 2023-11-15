@@ -25,7 +25,7 @@ class Lama():
 
         # Move resized image to device
         input_image = resized_image.unsqueeze(0)
-
+        print(input_image.shape, input_mask.shape)
         # Perform inference
         result = self.model(input_image.to(self.device),
                             input_mask.to(self.device))
