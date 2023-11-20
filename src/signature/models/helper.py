@@ -7,12 +7,12 @@ from ..logger import console as logger
 from torch.hub import download_url_to_file, get_dir
 import hashlib
 
-def md5sum(filename):
-    md5 = hashlib.md5()
-    with open(filename, "rb") as f:
-        for chunk in iter(lambda: f.read(128 * md5.block_size), b""):
-            md5.update(chunk)
-    return md5.hexdigest()
+def sha256_check(filename) -> str:
+
+    with open(filename,"rb") as f:
+        bytes = f.read() # read entire file as bytes
+        readable_hash = hashlib.sha256(bytes).hexdigest();
+        return readable_hash
 
 
 def switch_mps_device(model_name, device):
@@ -33,25 +33,25 @@ def get_cache_path_by_url(url):
     return cached_file
 
 
-def download_model(url, model_md5: str):
+def download_model(url, model_sha256: str):
     cached_file = get_cache_path_by_url(url)
     if not os.path.exists(cached_file):
         sys.stderr.write('Downloading: "{}" to {}\n'.format(url, cached_file))
         hash_prefix = None
         download_url_to_file(url, cached_file, hash_prefix, progress=True)
-        if model_md5:
-            _md5 = md5sum(cached_file)
-            if model_md5 == _md5:
-                logger.log(f"Download model success, md5: {_md5}")
+        if model_sha256:
+            _sha256 = sha256_check(cached_file)
+            if model_sha256 == _sha256:
+                logger.log(f"Download model success, sha256: {_sha256}")
             else:
                 try:
                     os.remove(cached_file)
                     logger.log(
-                        f"Model md5: {_md5}, expected md5: {model_md5}, wrong model deleted."
+                        f"Model sha256: {_sha256}, expected sha256: {model_sha256}, wrong model deleted."
                     )
                 except:
                     logger.log(
-                        f"Model md5: {_md5}, expected md5: {model_md5}, please delete {cached_file}."
+                        f"Model sha256: {_sha256}, expected sha256: {model_sha256}, please delete {cached_file}."
                     )
                 exit(-1)
 
@@ -59,17 +59,17 @@ def download_model(url, model_md5: str):
 
 
 
-def handle_error(model_path, model_md5, e):
-    _md5 = md5sum(model_path)
-    if _md5 != model_md5:
+def handle_error(model_path, model_sha256, e):
+    _sha256 = sha256_check(model_path)
+    if _sha256 != model_sha256:
         try:
             os.remove(model_path)
             logger.log(
-                f"Model md5: {_md5}, expected md5: {model_md5}, wrong model deleted."
+                f"Model sha256: {_sha256}, expected sha256: {model_sha256}, wrong model deleted."
             )
         except:
             logger.log(
-                f"Model md5: {_md5}, expected md5: {model_md5}, please delete {model_path}."
+                f"Model sha256: {_sha256}, expected sha256: {model_sha256}, please delete {model_path}."
             )
     else:
         logger.log(
@@ -78,26 +78,26 @@ def handle_error(model_path, model_md5, e):
     exit(-1)
 
 
-def load_jit_model(url_or_path, device, model_md5: str):
+def load_jit_model(url_or_path, device, model_sha256: str):
     if os.path.exists(url_or_path):
         model_path = url_or_path
     else:
-        model_path = download_model(url_or_path, model_md5)
+        model_path = download_model(url_or_path, model_sha256)
 
     logger.log(f"Loading model from: {model_path}")
     try:
         model = torch.jit.load(model_path, map_location="cpu").to(device) # type: ignore
     except Exception as e:
-        handle_error(model_path, model_md5, e)
+        handle_error(model_path, model_sha256, e)
     model.eval() # type: ignore
     return model # type: ignore
 
 
-def load_model(model: torch.nn.Module, url_or_path, device, model_md5):
+def load_model(model: torch.nn.Module, url_or_path, device, model_sha256):
     if os.path.exists(url_or_path):
         model_path = url_or_path
     else:
-        model_path = download_model(url_or_path, model_md5)
+        model_path = download_model(url_or_path, model_sha256)
 
     try:
         logger.log(f"Loading model from: {model_path}")
@@ -105,6 +105,6 @@ def load_model(model: torch.nn.Module, url_or_path, device, model_md5):
         model.load_state_dict(state_dict, strict=True)
         model.to(device)
     except Exception as e:
-        handle_error(model_path, model_md5, e)
+        handle_error(model_path, model_sha256, e)
     model.eval()
     return model
