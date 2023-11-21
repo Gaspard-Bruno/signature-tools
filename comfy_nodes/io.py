@@ -1,7 +1,6 @@
 from  ..src.signature.img.image_array import ImageArray
 from .helper import *
 from .categories import IO_CAT
-import base64 as b64
 
 def image_array_to_tensor(image_array):
     img_numpy = image_array.get_value()
@@ -37,10 +36,7 @@ class ImageFromBase64():
     CATEGORY = IO_CAT
 
     def process(self, base64: str):
-        padding = '=' * (4 - len(base64) % 4)
-        print(len(padding))
-        decoded_bytes = b64.b64decode(base64 + padding)
-        img_arr = ImageArray.from_bytes(decoded_bytes)
+        img_arr = ImageArray.from_base64(base64)
         return image_array_to_tensor(img_arr)
 
 class Base64FromImage():
@@ -57,12 +53,8 @@ class Base64FromImage():
         images_array = img_tensor_to_np(image)
         output = []
         for image_arr in images_array:
-            image = ImageArray(image_arr)
-            print(image.shape)
-            b_data = image.get_bytes()
-            base64_encoded = b64.b64encode(b_data).decode('utf-8')
+            base64_encoded = ImageArray(image_arr).get_base64()
             output.append(base64_encoded)
-        print(output)
         return (output,)
 
 

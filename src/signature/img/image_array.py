@@ -4,7 +4,7 @@ import io
 import os
 from typing import Any
 from urllib.parse import urlparse
-
+import base64
 import imageio as iio
 import numpy as np
 from numpy.typing import NDArray
@@ -103,6 +103,26 @@ class ImageArray(np.ndarray):
             console.log(error)
             raise error
 
+    @classmethod
+    def from_base64(cls, base64_str: str, **kwargs) -> ImageArray:
+        """
+        It takes a base64 string and returns a new instance of the class
+
+        Args:
+            cls: The class object that is being instantiated.
+            base64 (string): the base64 string
+
+        Returns:
+            A new instance of the class.
+        """
+        try:
+            padding = '=' * (4 - len(base64_str) % 4)
+            decoded_bytes = base64.b64decode(base64_str + padding)
+            return cls(cls.from_bytes(decoded_bytes, **kwargs))
+        except Exception as error:
+            console.log(error)
+            raise error
+
     @property
     def width(self) -> int:
         """
@@ -168,6 +188,10 @@ class ImageArray(np.ndarray):
 
     def get_bytes(self, extension: str = ".png") -> bytes:
         return iio.imwrite(uri="<bytes>", im=self, format=extension)  # type: ignore
+
+    def get_base64(self, extension: str = ".png") -> str:
+        data = self.get_bytes(extension=extension)
+        return base64.b64encode(data).decode("utf-8")
 
     def to_pil(self):
         """
