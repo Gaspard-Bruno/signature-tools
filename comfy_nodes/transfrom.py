@@ -1,4 +1,4 @@
-from .utils import *
+import torch
 from .categories import TRANSFORM_CAT
 from kornia.geometry.transform import rescale, resize
 

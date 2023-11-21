@@ -1,4 +1,4 @@
-from .utils import *
+import torch
 from .categories import MODELS_CAT
 from ..src.signature.models.lama import Lama
 from ..src.signature.models.isnet import IsNet

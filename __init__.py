@@ -1,4 +1,16 @@
-from .nodes import enhance, color, filters, io, transfrom, models, morphology
+try:
+    from .comfy_nodes import enhance, color, filters, io, transfrom, models, morphology
+except:
+    print(f"Error importing modules")
+
+    import subprocess
+    try:
+        subprocess.check_call(['pip3', 'install', '-e', '.'])
+    except subprocess.CalledProcessError:
+        print("Installation failed. Please install the dependencies manually.")
+
+    # Retry the import after attempting installation
+    from .comfy_nodes import enhance, color, filters, io, transfrom, models, morphology
 
 NODE_CLASS_MAPPINGS = {
     **io.NODE_CLASS_MAPPINGS,
@@ -8,4 +20,14 @@ NODE_CLASS_MAPPINGS = {
     **transfrom.NODE_CLASS_MAPPINGS,
     **morphology.NODE_CLASS_MAPPINGS,
     **models.NODE_CLASS_MAPPINGS,
+}
+
+__all__ = ['NODE_CLASS_MAPPINGS']
+
+MANIFEST = {
+    "name": "Signature Tools",
+    "version": (1,0,0),
+    "author": "marcojoao",
+    "project": "https://github.com/Gaspard-Bruno/signature-tools",
+    "description": "Image processing tools, AI models and more",
 }

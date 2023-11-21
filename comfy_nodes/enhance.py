@@ -1,4 +1,4 @@
-from .utils import *
+import torch
 from .categories import ENHANCE_CAT
 from kornia.enhance import adjust_brightness, adjust_saturation, equalize, equalize_clahe
 import torch

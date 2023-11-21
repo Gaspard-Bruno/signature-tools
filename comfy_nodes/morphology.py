@@ -1,4 +1,4 @@
-from .utils import *
+import torch
 from .categories import MORPHOLOGY_CAT
 from kornia.morphology import erosion, dilation
 from . import helper

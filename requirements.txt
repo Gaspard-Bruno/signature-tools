@@ -1,5 +1,4 @@
 kornia==0.7.0
-# kornia-rs==0.0.1
 boto3 == 1.*
 einops==0.7.0
 httpx==0.25.1

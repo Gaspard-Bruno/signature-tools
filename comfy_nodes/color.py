@@ -1,4 +1,4 @@
-from .utils import *
+import torch
 from .categories import COLOR_CAT
 from kornia.color import rgb_to_hls, rgb_to_hsv
 import torch
