@@ -4,7 +4,7 @@ from .categories import IO_CAT
 
 def image_array_to_tensor(image_array):
     img_numpy = image_array.get_value()
-    image = img_np_to_tensor([img_numpy])
+    image = np_to_tensor([img_numpy])
     image_shape = image.shape
     mask_shape = image_shape[:-1]
     mask = torch.ones(mask_shape)
@@ -50,7 +50,7 @@ class Base64FromImage():
     OUTPUT_NODE = True
 
     def process(self, image):
-        images_array = img_tensor_to_np(image)
+        images_array = tensor_to_np(image)
         output = []
         for image_arr in images_array:
             base64_encoded = ImageArray(image_arr).get_base64()
