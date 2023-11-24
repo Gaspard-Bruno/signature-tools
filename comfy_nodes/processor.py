@@ -6,7 +6,7 @@ from ..src.signature.img.tensor_image import TensorImage
 from ..src.signature.models.lineart import LineArt
 from ..src.signature.models.pidinet import PidiNet
 from ..src.signature.models.hednet import HedNet
-from kornia.color import grayscale_to_rgb
+from kornia.color import grayscale_to_rgb, rgb_to_grayscale
 from kornia.geometry.transform import resize, pyrup
 import kornia as K
 
@@ -34,11 +34,16 @@ class CannyEdgeProcessor():
 
     def process(self, image: torch.Tensor, lower_threshold: float, upper_threshold: float, resolution: int):
         target_resolution = get_resize_resolution(image, resolution)
-        input_img = TensorImage.from_comfy(image)
-        original_size = input_img.size
-        input_img = resize(input_img, size=target_resolution, interpolation='bilinear')
-        print(input_img.shape)
-        _, results = K.filters.canny(input=input_img, low_threshold=lower_threshold, high_threshold=upper_threshold)
+        print(image.shape)
+        step = TensorImage.from_comfy(image)
+        print(step.shape)
+        original_size = step.size
+        # input_image = resize(input_image, size=target_resolution, interpolation='bilinear')
+        # input_image = rgb_to_grayscale(input_image)
+  
+        input_image = torch.rand(1, 1, 512, 512).to(step.device)
+ 
+        _, results = K.filters.canny(input=input_image, low_threshold=lower_threshold, high_threshold=upper_threshold)
         results = resize(results, original_size, interpolation='bilinear')
         results = grayscale_to_rgb(results)
         results = TensorImage(results).get_comfy()
@@ -51,7 +56,6 @@ class CannyEdgeProcessor():
         #     images[i] = step
 
 
-        results = TensorImage.from_comfy(results)
 
         return (results,)
 

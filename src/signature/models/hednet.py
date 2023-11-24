@@ -4,8 +4,8 @@ from kornia.utils import get_cuda_or_mps_device_if_available
 from .helper import (
     load_jit_model,
 )
-MODEL_URL = "/resources/repos/annotators/hednet.pt"
-MODEL_SHA = ""
+MODEL_URL = "https://huggingface.co/gaspardbruno/HedLines/resolve/main/hednet.pt"
+MODEL_SHA = "0e7644cf09a6abd74bd4cfa2697a84eb8a832cf90ea6a81568f92d33b831bb9e"
 
 class HedNet():
     def __init__(self, device: str|None = None):
