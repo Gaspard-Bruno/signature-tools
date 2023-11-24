@@ -3,7 +3,7 @@ from kornia.utils import get_cuda_or_mps_device_if_available
 from .helper import (
     load_jit_model,
 )
-MODEL_URL = "https://huggingface.co/marcojoao/Pidinet/resolve/main/pidinet.pt"
+MODEL_URL = "https://huggingface.co/gaspardbruno/Pidinet/resolve/main/pidinet.pt"
 MODEL_SHA = "800ca4bc576210fefe25c9348cce2a329c34844087e7e12a8658bc8c978d62c2"
 
 class PidiNet():

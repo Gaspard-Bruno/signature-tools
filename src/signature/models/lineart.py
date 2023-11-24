@@ -3,10 +3,10 @@ from kornia.utils import get_cuda_or_mps_device_if_available
 from .helper import (
     load_jit_model,
 )
-REALISTIC_MODEL_URL = "https://huggingface.co/marcojoao/LineArt/resolve/main/lineart_realistic.pt"
+REALISTIC_MODEL_URL = "https://huggingface.co/gaspardbruno/LineArt/resolve/main/lineart_realistic.pt"
 REALISTIC_MODEL_SHA = "998eb87dda8905124d1e7609689cca57f9f0f616b2c66a70d5753f19ea5cdf3a"
 
-COARSE_MODEL_URL = "https://huggingface.co/marcojoao/LineArt/resolve/main/lineart_coarse.pt"
+COARSE_MODEL_URL = "https://huggingface.co/gaspardbruno/LineArt/resolve/main/lineart_coarse.pt"
 COARSE_MODEL_SHA = "2d3e05100c9e81220b22ca4d41eb1b536de003973e5dcdfa749306a6dd9e8f0d"
 
 class LineArt():

@@ -2,7 +2,7 @@ import cv2
 import torch
 from .categories import PROCESSORS_CAT
 from ..src.signature.img.tensor_image import TensorImage
-from ..src.signature.models.lineart_anime import LineArtAnime
+# from ..src.signature.models.lineart_anime import LineArtAnime
 from ..src.signature.models.lineart import LineArt
 from ..src.signature.models.pidinet import PidiNet
 from ..src.signature.models.hednet import HedNet
@@ -245,33 +245,33 @@ class LineArtProcessor():
         return (results,)
 
 
-class LineArtAnimeProcessor():
+# class LineArtAnimeProcessor():
 
-    def __init__(self):
-        self.model = LineArtAnime()
+#     def __init__(self):
+#         self.model = LineArtAnime()
 
-    @classmethod
-    def INPUT_TYPES(s): # type: ignore
-        return {"required": {
-            "image": ("IMAGE",),
-            "resolution": ("INT", {"default": 512, "min": 0, "max": 2048}),
-            }}
-    RETURN_TYPES = ("IMAGE",)
-    FUNCTION = "process"
-    CATEGORY = PROCESSORS_CAT
+#     @classmethod
+#     def INPUT_TYPES(s): # type: ignore
+#         return {"required": {
+#             "image": ("IMAGE",),
+#             "resolution": ("INT", {"default": 512, "min": 0, "max": 2048}),
+#             }}
+#     RETURN_TYPES = ("IMAGE",)
+#     FUNCTION = "process"
+#     CATEGORY = PROCESSORS_CAT
 
-    def process(self, image: torch.Tensor,  resolution: int):
-        target_resolution = (resolution, resolution)
-        images = TensorImage.from_comfy(image)
-        original_size = (images.shape[2], images.shape[3])
-        images = resize(images, size=target_resolution, interpolation='bilinear')
-        results = self.model.forward(images)
-        results = 1 - grayscale_to_rgb(results)
-        results = resize(results, original_size, interpolation='bilinear')
+#     def process(self, image: torch.Tensor,  resolution: int):
+#         target_resolution = (resolution, resolution)
+#         images = TensorImage.from_comfy(image)
+#         original_size = (images.shape[2], images.shape[3])
+#         images = resize(images, size=target_resolution, interpolation='bilinear')
+#         results = self.model.forward(images)
+#         results = 1 - grayscale_to_rgb(results)
+#         results = resize(results, original_size, interpolation='bilinear')
 
-        results = TensorImage(results).get_comfy()
-        return (results,)
-    
+#         results = TensorImage(results).get_comfy()
+#         return (results,)
+
 class ScribbleHedProcessor():
 
     def __init__(self):
@@ -347,7 +347,7 @@ NODE_CLASS_MAPPINGS = {
     "Pidinet Processor (SoftEdge)": PidiNetProcessor,
     "Scribble Hed Processor": ScribbleHedProcessor,
     "LineArt Processor": LineArtProcessor,
-    "LineArt Anime Processor": LineArtAnimeProcessor,
+    #"LineArt Anime Processor": LineArtAnimeProcessor,
     # "Shuffle Processor": ShuffleProcessor,
     "Canny Edge Processor": CannyEdgeProcessor,
     # "Binary Threshold Processor": BinaryThresholdProcessor,

@@ -6,7 +6,7 @@ from kornia.utils import get_cuda_or_mps_device_if_available
 from .helper import (
     load_jit_model,
 )
-MODEL_URL = "https://huggingface.co/marcojoao/signature-models/resolve/main/big-lama.pt"
+MODEL_URL = "https://huggingface.co/gaspardbruno/BigLama/resolve/main/big-lama.pt"
 MODEL_SHA = "344c77bbcb158f17dd143070d1e789f38a66c04202311ae3a258ef66667a9ea9"
 
 

@@ -9,7 +9,6 @@ import imageio as iio
 from numpy.typing import NDArray
 from urllib.parse import urlparse
 
-
 class TensorImage(torch.Tensor):
 
     def __init__(self, data):
@@ -46,7 +45,7 @@ class TensorImage(torch.Tensor):
     def from_numpy(cls, data: NDArray):
         new_data = K.utils.image_to_tensor(data)
         return cls(new_data)
-    
+
     @classmethod
     def from_comfy(cls, data: torch.Tensor):
         if data.ndim == 4:

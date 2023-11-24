@@ -44,12 +44,10 @@ class SalientObjectDetection:
     def process(self, image: torch.Tensor):
         input_image = TensorImage.from_comfy(image)
         outputs = self.model.forward(input_image)
-        print(outputs.shape)
         outputs = TensorImage(outputs).get_comfy()
-        print(outputs.shape)
         return (outputs,)
 
 NODE_CLASS_MAPPINGS = {
-    "Magic Eraser(LaMa)": MagicEraser,
-    "Salient Object Detection(IsNet)": SalientObjectDetection,
+    "Magic Eraser (LaMa)": MagicEraser,
+    "Salient Object Detection (IsNet)": SalientObjectDetection,
 }

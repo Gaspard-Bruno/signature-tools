@@ -4,7 +4,8 @@ import kornia.geometry.transform as K
 from .helper import (
     load_jit_model,
 )
-MODEL_URL = "https://huggingface.co/marcojoao/ISNet/resolve/main/isnet.pt"
+"https://huggingface.co/gaspardbruno/ISNet/resolve/main/"
+MODEL_URL = "https://huggingface.co/gaspardbruno/ISNet/resolve/main/isnet.pt"
 MODEL_SHA = "0689398c252bd1275392ea5300204ced42a94181fa15cc7a0cbd42752e5a9648"
 
 class IsNet():
