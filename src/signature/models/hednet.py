@@ -1,5 +1,6 @@
 import torch
 import kornia.geometry.transform as K
+from kornia.utils import get_mps_device_if_available
 from .helper import (
     load_jit_model,
 )
@@ -8,8 +9,7 @@ MODEL_SHA = ""
 
 class HedNet():
     def __init__(self, device: str|None = None):
-        self.device = device or ('cuda' if torch.cuda.is_available() else 'cpu')
-        print(f"Device: {self.device}")
+        self.device = get_mps_device_if_available()
         self.model = load_jit_model(MODEL_URL, self.device, MODEL_SHA).eval()
 
     def safe_step(self, x, step=2):

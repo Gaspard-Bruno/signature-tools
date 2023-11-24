@@ -18,35 +18,42 @@ def get_resize_resolution(image, max_resolution: int):
     return (int(image.shape[2] * scale_factor), int(image.shape[1] * scale_factor))
 
 
-# class CannyEdgeProcessor():
+class CannyEdgeProcessor():
 
-#     @classmethod
-#     def INPUT_TYPES(s): # type: ignore
-#         return {"required": {
-#             "image": ("IMAGE",),
-#             "lower_threshold": ("INT", {"default": 100, "min": 0, "max": 255}),
-#             "upper_threshold": ("INT", {"default": 200, "min": 0, "max": 255}),
-#             "resolution": ("INT", {"default": 512, "min": 0, "max": 2048}),
-#             }}
-#     RETURN_TYPES = ("IMAGE",)
-#     FUNCTION = "process"
-#     CATEGORY = PROCESSORS_CAT
+    @classmethod
+    def INPUT_TYPES(s): # type: ignore
+        return {"required": {
+            "image": ("IMAGE",),
+            "lower_threshold": ("FLOAT", {"default": 0.1, "min": 0.0, "max": 1.0}),
+            "upper_threshold": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 1.0}),
+            "resolution": ("INT", {"default": 512, "min": 0, "max": 2048}),
+            }}
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "process"
+    CATEGORY = PROCESSORS_CAT
 
-#     def process(self, image: torch.Tensor, lower_threshold: int, upper_threshold: int, resolution: int):
-#         target_resolution = get_resize_resolution(image, resolution)
-#         images = helper.comfy_to_np(image)
+    def process(self, image: torch.Tensor, lower_threshold: float, upper_threshold: float, resolution: int):
+        target_resolution = get_resize_resolution(image, resolution)
+        input_img = TensorImage.from_comfy(image)
+        original_size = input_img.size
+        input_img = resize(input_img, size=target_resolution, interpolation='bilinear')
+        print(input_img.shape)
+        _, results = K.filters.canny(input=input_img, low_threshold=lower_threshold, high_threshold=upper_threshold)
+        results = resize(results, original_size, interpolation='bilinear')
+        results = grayscale_to_rgb(results)
+        results = TensorImage(results).get_comfy()
+        
+        # for i in range(len(images)):
+        #     img = images[i]
+        #     print(img.shape)
+        #     step = cv2.resize(img, target_resolution, interpolation=cv2.INTER_LINEAR) # type: ignore
+        #     step = cv2.Canny(image=step,threshold1=lower_threshold, threshold2=upper_threshold) # type: ignore
+        #     images[i] = step
 
-#         for i in range(len(images)):
-#             img = images[i]
-#             print(img.shape)
-#             step = cv2.resize(img, target_resolution, interpolation=cv2.INTER_LINEAR) # type: ignore
-#             step = cv2.Canny(image=step,threshold1=lower_threshold, threshold2=upper_threshold) # type: ignore
-#             images[i] = step
 
+        results = TensorImage.from_comfy(results)
 
-#         results = helper.np_to(images)
-
-#         return (results,)
+        return (results,)
 
 # class BinaryThresholdProcessor():
 
@@ -342,7 +349,7 @@ NODE_CLASS_MAPPINGS = {
     "LineArt Processor": LineArtProcessor,
     "LineArt Anime Processor": LineArtAnimeProcessor,
     # "Shuffle Processor": ShuffleProcessor,
-    # "Canny Edge Processor": CannyEdgeProcessor,
+    "Canny Edge Processor": CannyEdgeProcessor,
     # "Binary Threshold Processor": BinaryThresholdProcessor,
     "Tile Processor": TileProcessor,
 }

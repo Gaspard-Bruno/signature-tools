@@ -1,5 +1,5 @@
 import torch
-import kornia.geometry.transform as K
+from kornia.utils import get_mps_device_if_available
 from .helper import (
     load_jit_model,
 )
@@ -11,7 +11,7 @@ COARSE_MODEL_SHA = "2d3e05100c9e81220b22ca4d41eb1b536de003973e5dcdfa749306a6dd9e
 
 class LineArt():
     def __init__(self, device: str|None = None):
-        self.device = device or ('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = get_mps_device_if_available()
         self.realistic_model = load_jit_model(REALISTIC_MODEL_URL, self.device, REALISTIC_MODEL_SHA).eval()
         self.coarse_model = load_jit_model(COARSE_MODEL_URL, self.device, COARSE_MODEL_SHA).eval()
 

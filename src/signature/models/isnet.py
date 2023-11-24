@@ -1,5 +1,5 @@
 import torch
-
+from kornia.utils import get_mps_device_if_available
 import kornia.geometry.transform as K
 from .helper import (
     load_jit_model,
@@ -9,7 +9,7 @@ MODEL_SHA = "0689398c252bd1275392ea5300204ced42a94181fa15cc7a0cbd42752e5a9648"
 
 class IsNet():
     def __init__(self, device: str|None = None):
-        self.device = device or ('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = get_mps_device_if_available()
         self.model = load_jit_model(MODEL_URL, self.device, MODEL_SHA).eval()
         self.infer_size = (1024, 1024)
 

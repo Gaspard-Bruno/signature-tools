@@ -1,5 +1,5 @@
 import torch
-import kornia.geometry.transform as K
+from kornia.utils import get_mps_device_if_available
 from .helper import (
     load_jit_model,
 )
@@ -8,7 +8,7 @@ MODEL_SHA = "800ca4bc576210fefe25c9348cce2a329c34844087e7e12a8658bc8c978d62c2"
 
 class PidiNet():
     def __init__(self, device: str|None = None):
-        self.device = device or ('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = get_mps_device_if_available()
         print(f"Device: {self.device}")
         self.model = load_jit_model(MODEL_URL, self.device, MODEL_SHA).eval()
 

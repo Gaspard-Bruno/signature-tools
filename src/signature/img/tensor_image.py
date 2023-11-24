@@ -87,6 +87,13 @@ class TensorImage(torch.Tensor):
         return new_data
 
     @property
+    def size(self) -> tuple[int, int]:
+        """
+        Returns:
+            The size of the tensor image.
+        """
+        return (self.height, self.width)
+    @property
     def width(self) -> int:
         """
         Returns:

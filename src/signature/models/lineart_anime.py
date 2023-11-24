@@ -1,6 +1,5 @@
 import torch
-import kornia as K
-import numpy as np
+from kornia.utils import get_mps_device_if_available
 from .helper import (
     load_jit_model,
 )
@@ -9,7 +8,7 @@ MODEL_SHA = ""
 
 class LineArtAnime():
     def __init__(self, device: str|None = None):
-        self.device = device or ('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = get_mps_device_if_available()
         self.model = load_jit_model(MODEL_URL, self.device, MODEL_SHA).eval()
 
     def forward(self, image: torch.Tensor):
