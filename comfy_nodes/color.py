@@ -39,5 +39,5 @@ class RGBtoHSV:
 
 NODE_CLASS_MAPPINGS = {
     "RGB to HLS": RBGtoHLS,
-    "RGBA to HSV": RGBtoHSV,
+    "RGB to HSV": RGBtoHSV,
 }

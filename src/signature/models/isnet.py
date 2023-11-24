@@ -14,11 +14,12 @@ class IsNet():
         self.infer_size = (1024, 1024)
 
     def forward(self, image: torch.Tensor):
-        original_shape = image.shape[2:]
-        resized_image = K.resize(image, self.infer_size, interpolation='bilinear')
+        input_image = image.to(self.device)
+        _,_,H, W = image.shape
+        resized_image = K.resize(input_image, self.infer_size, interpolation='bilinear')
 
-        result = self.model(resized_image.to(self.device))[0]
-        pred = K.resize(result[0], original_shape, interpolation='bilinear')
+        result = self.model(resized_image)[0]
+        pred = K.resize(result[0], (H, W), interpolation='bilinear')
 
         ma = torch.max(pred)
         mi = torch.min(pred)

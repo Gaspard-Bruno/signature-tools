@@ -1,8 +1,8 @@
 import torch
 from .categories import MODELS_CAT
+from  ..src.signature.img.tensor_image import TensorImage
 from ..src.signature.models.lama import Lama
 from ..src.signature.models.isnet import IsNet
-from . import helper
 
 class MagicEraser:
     def __init__(self):
@@ -20,11 +20,11 @@ class MagicEraser:
     CATEGORY = MODELS_CAT
 
     def process(self, image: torch.Tensor, mask: torch.Tensor, mode: str):
-        input_image = helper.comfy_img_to_torch(image)
-        input_mask = helper.comfy_mask_to_torch(mask)
+        input_image = TensorImage.from_comfy(image)
+        input_mask = TensorImage.from_comfy(mask)
 
         highres = self.model.forward(input_image, input_mask, mode)
-        highres = helper.torch_img_to_comfy(highres)
+        highres = TensorImage(highres).get_comfy()
 
         return (highres,)
 
@@ -42,9 +42,11 @@ class SalientObjectDetection:
     CATEGORY = MODELS_CAT
 
     def process(self, image: torch.Tensor):
-        input_image = helper.comfy_img_to_torch(image)
+        input_image = TensorImage.from_comfy(image)
         outputs = self.model.forward(input_image)
-        outputs = helper.torch_mask_to_comfy(outputs)
+        print(outputs.shape)
+        outputs = TensorImage(outputs).get_comfy()
+        print(outputs.shape)
         return (outputs,)
 
 NODE_CLASS_MAPPINGS = {

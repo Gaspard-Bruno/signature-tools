@@ -1,7 +1,7 @@
 import torch
 from .categories import MORPHOLOGY_CAT
 from kornia.morphology import erosion, dilation
-from . import helper
+from  ..src.signature.img.tensor_image import TensorImage
 
 class ImageErosion:
     def __init__(self):
@@ -18,14 +18,13 @@ class ImageErosion:
     FUNCTION = "process"
     CATEGORY = MORPHOLOGY_CAT
     def process(self, image: torch.Tensor, kernel_size, iterations):
-        step = helper.comfy_img_to_torch(image)
+        step = TensorImage.from_comfy(image)
         kernel_size = max(1, kernel_size)
-        kernel = torch.ones(kernel_size, kernel_size)
+        kernel = torch.ones(kernel_size, kernel_size).to(step.device)
         for _ in range(iterations):
             step = erosion(tensor=step, kernel=kernel)
-        output = helper.torch_img_to_comfy(step)
+        output = TensorImage(step).get_comfy()
         return (output,)
-
 
 class ImageDilation:
     def __init__(self):
@@ -42,12 +41,12 @@ class ImageDilation:
     FUNCTION = "process"
     CATEGORY = MORPHOLOGY_CAT
     def process(self, image: torch.Tensor, kernel_size, iterations):
-        step = helper.comfy_img_to_torch(image)
+        step = TensorImage.from_comfy(image)
         kernel_size = max(1, kernel_size)
-        kernel = torch.ones(kernel_size, kernel_size)
+        kernel = torch.ones(kernel_size, kernel_size).to(step.device)
         for _ in range(iterations):
             step = dilation(tensor=step, kernel=kernel)
-        output = helper.torch_img_to_comfy(step)
+        output = TensorImage(step).get_comfy()
         return (output,)
 
 
@@ -66,12 +65,12 @@ class MaskErosion:
     FUNCTION = "process"
     CATEGORY = MORPHOLOGY_CAT
     def process(self, mask: torch.Tensor, kernel_size, iterations):
-        step = helper.comfy_mask_to_torch(mask)
+        step = TensorImage.from_comfy(mask)
         kernel_size = max(1, kernel_size)
-        kernel = torch.ones(kernel_size, kernel_size)
+        kernel = torch.ones(kernel_size, kernel_size).to(step.device)
         for _ in range(iterations):
             step = erosion(tensor=step, kernel=kernel)
-        output = helper.torch_mask_to_comfy(step)
+        output = TensorImage(step).get_comfy()
         return (output,)
 
 
@@ -90,12 +89,12 @@ class MaskDilation:
     FUNCTION = "process"
     CATEGORY = MORPHOLOGY_CAT
     def process(self, mask: torch.Tensor, kernel_size, iterations):
-        step = helper.comfy_mask_to_torch(mask)
+        step = TensorImage.from_comfy(mask)
         kernel_size = max(1, kernel_size)
-        kernel = torch.ones(kernel_size, kernel_size)
+        kernel = torch.ones(kernel_size, kernel_size).to(step.device)
         for _ in range(iterations):
             step = dilation(tensor=step, kernel=kernel)
-        output = helper.torch_mask_to_comfy(step)
+        output = TensorImage(step).get_comfy()
         return (output,)
 
 

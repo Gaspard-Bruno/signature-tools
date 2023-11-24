@@ -1,7 +1,7 @@
 import cv2
 import torch
-from . import helper
 from .categories import PROCESSORS_CAT
+from ..src.signature.img.tensor_image import TensorImage
 from ..src.signature.models.lineart_anime import LineArtAnime
 from ..src.signature.models.lineart import LineArt
 from ..src.signature.models.pidinet import PidiNet
@@ -18,111 +18,114 @@ def get_resize_resolution(image, max_resolution: int):
     return (int(image.shape[2] * scale_factor), int(image.shape[1] * scale_factor))
 
 
-class CannyEdgeProcessor():
+# class CannyEdgeProcessor():
 
-    @classmethod
-    def INPUT_TYPES(s): # type: ignore
-        return {"required": {
-            "image": ("IMAGE",),
-            "lower_threshold": ("INT", {"default": 100, "min": 0, "max": 255}),
-            "upper_threshold": ("INT", {"default": 200, "min": 0, "max": 255}),
-            "resolution": ("INT", {"default": 512, "min": 0, "max": 2048}),
-            }}
-    RETURN_TYPES = ("IMAGE",)
-    FUNCTION = "process"
-    CATEGORY = PROCESSORS_CAT
+#     @classmethod
+#     def INPUT_TYPES(s): # type: ignore
+#         return {"required": {
+#             "image": ("IMAGE",),
+#             "lower_threshold": ("INT", {"default": 100, "min": 0, "max": 255}),
+#             "upper_threshold": ("INT", {"default": 200, "min": 0, "max": 255}),
+#             "resolution": ("INT", {"default": 512, "min": 0, "max": 2048}),
+#             }}
+#     RETURN_TYPES = ("IMAGE",)
+#     FUNCTION = "process"
+#     CATEGORY = PROCESSORS_CAT
 
-    def process(self, image: torch.Tensor, lower_threshold: int, upper_threshold: int, resolution: int):
-        target_resolution = get_resize_resolution(image, resolution)
-        images = helper.tensor_to_np(image)
-        results = []
-        for i in images:
-            step = cv2.resize(i, target_resolution, interpolation=cv2.INTER_LINEAR) # type: ignore
-            step = cv2.Canny(image=step,threshold1=lower_threshold, threshold2=upper_threshold) # type: ignore
-            results.append(step)
+#     def process(self, image: torch.Tensor, lower_threshold: int, upper_threshold: int, resolution: int):
+#         target_resolution = get_resize_resolution(image, resolution)
+#         images = helper.comfy_to_np(image)
 
-        results = helper.np_to_tensor(results)
+#         for i in range(len(images)):
+#             img = images[i]
+#             print(img.shape)
+#             step = cv2.resize(img, target_resolution, interpolation=cv2.INTER_LINEAR) # type: ignore
+#             step = cv2.Canny(image=step,threshold1=lower_threshold, threshold2=upper_threshold) # type: ignore
+#             images[i] = step
 
-        return (results,)
 
-class BinaryThresholdProcessor():
+#         results = helper.np_to(images)
 
-    @classmethod
-    def INPUT_TYPES(s): # type: ignore
-        return {"required": {
-            "image": ("IMAGE",),
-            "binary_threshold": ("INT", {"default": 100, "min": 0, "max": 255}),
-            "resolution": ("INT", {"default": 512, "min": 0, "max": 2048}),
-            }}
-    RETURN_TYPES = ("IMAGE",)
-    FUNCTION = "process"
-    CATEGORY = PROCESSORS_CAT
+#         return (results,)
 
-    def process(self, image: torch.Tensor, binary_threshold: int, resolution: int):
-        target_resolution = get_resize_resolution(image, resolution)
-        images = helper.tensor_to_np(image)
-        results = []
-        for i in images:
-            step = cv2.resize(i, target_resolution, interpolation=cv2.INTER_LINEAR) # type: ignore
-            step = cv2.cvtColor(step, cv2.COLOR_RGB2GRAY)
-            if binary_threshold == 0 or binary_threshold == 255:
-                _, step = cv2.threshold(step, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-            else:
-                _, step = cv2.threshold(step, binary_threshold, 255, cv2.THRESH_BINARY_INV)
-            result = cv2.cvtColor(step, cv2.COLOR_GRAY2RGB)
-            results.append(result)
+# class BinaryThresholdProcessor():
 
-        results = helper.np_to_tensor(results)
+#     @classmethod
+#     def INPUT_TYPES(s): # type: ignore
+#         return {"required": {
+#             "image": ("IMAGE",),
+#             "binary_threshold": ("INT", {"default": 100, "min": 0, "max": 255}),
+#             "resolution": ("INT", {"default": 512, "min": 0, "max": 2048}),
+#             }}
+#     RETURN_TYPES = ("IMAGE",)
+#     FUNCTION = "process"
+#     CATEGORY = PROCESSORS_CAT
 
-        return (results,)
+#     def process(self, image: torch.Tensor, binary_threshold: int, resolution: int):
+#         target_resolution = get_resize_resolution(image, resolution)
+#         images = helper.tensor_to_np(image)
+#         results = []
+#         for i in images:
+#             step = cv2.resize(i, target_resolution, interpolation=cv2.INTER_LINEAR) # type: ignore
+#             step = cv2.cvtColor(step, cv2.COLOR_RGB2GRAY)
+#             if binary_threshold == 0 or binary_threshold == 255:
+#                 _, step = cv2.threshold(step, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+#             else:
+#                 _, step = cv2.threshold(step, binary_threshold, 255, cv2.THRESH_BINARY_INV)
+#             result = cv2.cvtColor(step, cv2.COLOR_GRAY2RGB)
+#             results.append(result)
 
-class ShuffleProcessor():
+#         results = helper.np_to_tensor(results)
 
-    @classmethod
-    def INPUT_TYPES(s): # type: ignore
-        return {"required": {
-            "image": ("IMAGE",),
-            "resolution": ("INT", {"default": 512, "min": 0, "max": 2048}),
-            }}
-    RETURN_TYPES = ("IMAGE",)
-    FUNCTION = "process"
-    CATEGORY = PROCESSORS_CAT
+#         return (results,)
 
-    def process(self, image: torch.Tensor, resolution: int):
-        target_resolution = get_resize_resolution(image, resolution)
-        images = helper.tensor_to_np(image)
-        results = []
-        for i in images:
-            step = cv2.resize(i, target_resolution, interpolation=cv2.INTER_LINEAR) # type: ignore
-            result = self.apply(step)
-            results.append(result)
+# class ShuffleProcessor():
 
-        results = helper.np_to_tensor(results)
+#     @classmethod
+#     def INPUT_TYPES(s): # type: ignore
+#         return {"required": {
+#             "image": ("IMAGE",),
+#             "resolution": ("INT", {"default": 512, "min": 0, "max": 2048}),
+#             }}
+#     RETURN_TYPES = ("IMAGE",)
+#     FUNCTION = "process"
+#     CATEGORY = PROCESSORS_CAT
 
-        return (results,)
+#     def process(self, image: torch.Tensor, resolution: int):
+#         target_resolution = get_resize_resolution(image, resolution)
+#         images = helper.tensor_to_np(image)
+#         results = []
+#         for i in images:
+#             step = cv2.resize(i, target_resolution, interpolation=cv2.INTER_LINEAR) # type: ignore
+#             result = self.apply(step)
+#             results.append(result)
 
-    def apply(self, img, h=None, w=None, f=None):
-        H, W, _ = img.shape
-        if h is None:
-            h = H
-        if w is None:
-            w = W
-        if f is None:
-            f = 256
-        x = self.make_noise_disk(h, w, 1, f) * float(W - 1)
-        y = self.make_noise_disk(h, w, 1, f) * float(H - 1)
-        flow = np.concatenate([x, y], axis=2).astype(np.float32)
-        return cv2.remap(img, flow, None, cv2.INTER_LINEAR) # type: ignore
+#         results = helper.np_to_tensor(results)
 
-    def make_noise_disk(self, H, W, C, F):
-        noise = np.random.uniform(low=0, high=1, size=((H // F) + 2, (W // F) + 2, C))
-        noise = cv2.resize(noise, (W + 2 * F, H + 2 * F), interpolation=cv2.INTER_CUBIC)
-        noise = noise[F: F + H, F: F + W]
-        noise -= np.min(noise)
-        noise /= np.max(noise)
-        if C == 1:
-            noise = noise[:, :, None]
-        return noise
+#         return (results,)
+
+#     def apply(self, img, h=None, w=None, f=None):
+#         H, W, _ = img.shape
+#         if h is None:
+#             h = H
+#         if w is None:
+#             w = W
+#         if f is None:
+#             f = 256
+#         x = self.make_noise_disk(h, w, 1, f) * float(W - 1)
+#         y = self.make_noise_disk(h, w, 1, f) * float(H - 1)
+#         flow = np.concatenate([x, y], axis=2).astype(np.float32)
+#         return cv2.remap(img, flow, None, cv2.INTER_LINEAR) # type: ignore
+
+#     def make_noise_disk(self, H, W, C, F):
+#         noise = np.random.uniform(low=0, high=1, size=((H // F) + 2, (W // F) + 2, C))
+#         noise = cv2.resize(noise, (W + 2 * F, H + 2 * F), interpolation=cv2.INTER_CUBIC)
+#         noise = noise[F: F + H, F: F + W]
+#         noise -= np.min(noise)
+#         noise /= np.max(noise)
+#         if C == 1:
+#             noise = noise[:, :, None]
+#         return noise
 
 class HedNetProcessor():
 
@@ -143,13 +146,13 @@ class HedNetProcessor():
     def process(self, image: torch.Tensor, is_safe: bool,  resolution: int):
 
         target_resolution = (resolution, resolution)
-        images = helper.comfy_img_to_torch(image)
+        images = TensorImage.from_comfy(image)
         original_size = (images.shape[2], images.shape[3])
         image_hed = resize(images, size=target_resolution, interpolation='bilinear')
         results = self.model.forward(image_hed, is_safe=is_safe)
         results = grayscale_to_rgb(results)
         results = resize(results, original_size, interpolation='bilinear')
-        results = helper.torch_img_to_comfy(results)
+        results = TensorImage(results).get_comfy()
         return (results,)
 
 class PidiNetProcessor():
@@ -171,14 +174,14 @@ class PidiNetProcessor():
 
     def process(self, image: torch.Tensor, is_safe: bool, apply_filter: bool, resolution: int):
         target_resolution = (resolution, resolution)
-        images = helper.comfy_img_to_torch(image)
+        images = TensorImage.from_comfy(image)
         original_size = (images.shape[2], images.shape[3])
         images = resize(images, size=target_resolution, interpolation='bilinear')
         results = self.model.forward(images, is_safe=is_safe, apply_filter=apply_filter)
         results = grayscale_to_rgb(results)
         results = resize(results, original_size, interpolation='bilinear')
 
-        results = helper.torch_img_to_comfy(results)
+        results = TensorImage(results).get_comfy()
         return (results,)
 
 class TileProcessor():
@@ -197,12 +200,12 @@ class TileProcessor():
 
 
     def process(self, image: torch.Tensor, pyrUp_iters: int):
-        input_img = helper.comfy_img_to_torch(image)
+        input_img = TensorImage.from_comfy(image)
         _, _ , height, width = input_img.shape
         step = resize(input_img, (height // (2 ** pyrUp_iters), width // (2 ** pyrUp_iters)), align_corners=False)
         for _ in range(pyrUp_iters):
             step = pyrup(step, align_corners=False)
-        results = helper.torch_img_to_comfy(step)
+        results = TensorImage(step).get_comfy()
         return (results,)
 
 class LineArtProcessor():
@@ -224,14 +227,14 @@ class LineArtProcessor():
 
     def process(self, image: torch.Tensor, mode: str, resolution: int):
         target_resolution = (resolution, resolution)
-        images = helper.comfy_img_to_torch(image)
+        images = TensorImage.from_comfy(image)
         original_size = (images.shape[2], images.shape[3])
         images = resize(images, size=target_resolution, interpolation='bilinear')
         results = self.model.forward(images, mode=mode)
         results = 1 - grayscale_to_rgb(results)
         results = resize(results, original_size, interpolation='bilinear')
 
-        results = helper.torch_img_to_comfy(results)
+        results = TensorImage(results).get_comfy()
         return (results,)
 
 
@@ -252,14 +255,14 @@ class LineArtAnimeProcessor():
 
     def process(self, image: torch.Tensor,  resolution: int):
         target_resolution = (resolution, resolution)
-        images = helper.comfy_img_to_torch(image)
+        images = TensorImage.from_comfy(image)
         original_size = (images.shape[2], images.shape[3])
         images = resize(images, size=target_resolution, interpolation='bilinear')
         results = self.model.forward(images)
         results = 1 - grayscale_to_rgb(results)
         results = resize(results, original_size, interpolation='bilinear')
 
-        results = helper.torch_img_to_comfy(results)
+        results = TensorImage(results).get_comfy()
         return (results,)
     
 class ScribbleHedProcessor():
@@ -314,7 +317,7 @@ class ScribbleHedProcessor():
 
     def process(self, image: torch.Tensor,  resolution: int):
         target_resolution = (resolution, resolution)
-        images = helper.comfy_img_to_torch(image)
+        images = TensorImage.from_comfy(image)
         original_size = (images.shape[2], images.shape[3])
         images = resize(images, size=target_resolution, interpolation='bilinear')
         results = self.model.forward(images)
@@ -327,7 +330,7 @@ class ScribbleHedProcessor():
 
 
         results = grayscale_to_rgb(results)
-        results = helper.torch_img_to_comfy(results)
+        results = TensorImage(results).get_comfy()
         print(results.shape)
         return (results,)
 
@@ -338,8 +341,8 @@ NODE_CLASS_MAPPINGS = {
     "Scribble Hed Processor": ScribbleHedProcessor,
     "LineArt Processor": LineArtProcessor,
     "LineArt Anime Processor": LineArtAnimeProcessor,
-    "Shuffle Processor": ShuffleProcessor,
-    "Canny Edge Processor": CannyEdgeProcessor,
-    "Binary Threshold Processor": BinaryThresholdProcessor,
+    # "Shuffle Processor": ShuffleProcessor,
+    # "Canny Edge Processor": CannyEdgeProcessor,
+    # "Binary Threshold Processor": BinaryThresholdProcessor,
     "Tile Processor": TileProcessor,
 }

@@ -1,5 +1,5 @@
 import torch
-from . import helper
+from  ..src.signature.img.tensor_image import TensorImage
 from .categories import FILTER_CAT
 from kornia.filters import gaussian_blur2d, unsharp_mask
 import torch
@@ -25,8 +25,7 @@ class ImageGaussianBlur:
             radius += 1
         in_kernel_size = (radius, radius)
         in_sigma = (sigma, sigma)
-        step = helper.comfy_img_to_torch(image)
-
+        step = TensorImage.from_comfy(image)
         interations = max(1, interations)
         for _ in range(interations):
             step = gaussian_blur2d(step,
@@ -34,7 +33,7 @@ class ImageGaussianBlur:
                                     sigma=in_sigma,
                                     border_type='reflect',
                                     separable=True)
-        output = helper.torch_img_to_comfy(step)
+        output = TensorImage(step).get_comfy()
         return (output,)
 
 class ImageUnsharpMask:
@@ -58,11 +57,11 @@ class ImageUnsharpMask:
             radius += 1
         in_kernel_size = (radius, radius)
         in_sigma = (sigma, sigma)
-        step = helper.comfy_img_to_torch(image)
+        step = TensorImage.from_comfy(image)
         interations = max(1, interations)
         for _ in range(interations):
             step = unsharp_mask(step, kernel_size=in_kernel_size, sigma=in_sigma)
-        output = helper.torch_img_to_comfy(step)
+        output = TensorImage(step).get_comfy()
         return (output,)
 
 
@@ -87,7 +86,7 @@ class MaskGaussianBlur:
             radius += 1
         in_kernel_size = (radius, radius)
         in_sigma = (sigma, sigma)
-        step = helper.comfy_mask_to_torch(image)
+        step = TensorImage.from_comfy(image)
 
         interations = max(1, interations)
         for _ in range(interations):
@@ -96,7 +95,7 @@ class MaskGaussianBlur:
                                     sigma=in_sigma,
                                     border_type='reflect',
                                     separable=True)
-        output = helper.torch_mask_to_comfy(step)
+        output = TensorImage(step).get_comfy()
         return (output,)
 
 NODE_CLASS_MAPPINGS = {

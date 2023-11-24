@@ -15,18 +15,21 @@ class Lama():
         self.model = load_jit_model(MODEL_URL, self.device, MODEL_SHA).eval()
 
     def forward(self, image: torch.Tensor, mask: torch.Tensor, mode: str = 'CROP'):
+        input_image = image.to(self.device)
+        input_mask = mask.to(self.device)
         if mode == 'FULL':
-            return self.forward_full(image, mask)
+            return self.forward_full(input_image, input_mask)
         elif mode == 'FIXED':
-            return self.forward_fixed(image, mask)
-        return self.forward_crop(image, mask)
+            return self.forward_fixed(input_image, input_mask)
+        return self.forward_crop(input_image, input_mask)
 
     def forward_crop(self, image: torch.Tensor, mask: torch.Tensor):
 
         mask = (mask > 0.05).to(torch.float32)
         tar_size = mask.clone()
+        d_kernel = torch.ones(13, 13).to(self.device)
         for _ in range(3):
-            tar_size = M.dilation(tar_size, torch.ones(13, 13))
+            tar_size = M.dilation(tar_size, d_kernel)
 
         # Find bounding box coordinates
         _, _, y, x = torch.where(tar_size)
@@ -56,7 +59,7 @@ class Lama():
         cropped_mask = mask[:, :, y_min:y_max + 1, x_min:x_max + 1]
 
         for _ in range(3):
-            cropped_mask = M.dilation(cropped_mask, torch.ones(13, 13))
+            cropped_mask = M.dilation(cropped_mask, d_kernel)
 
         result = self.model(cropped_image.to(self.device), cropped_mask.to(self.device))
         # Compose the result on top of the original image
@@ -73,8 +76,9 @@ class Lama():
         tensor_mask, _ = self.resize_with_padding(mask)
 
         # Preprocess mask
+        d_kernel = torch.ones(13, 13).to(self.device)
         for _ in range(3):
-            tensor_mask = M.dilation(tensor_mask, torch.ones(13, 13))
+            tensor_mask = M.dilation(tensor_mask, d_kernel)
         tensor_mask = (tensor_mask > 0.05).to(torch.float32)
 
         # Perform inference
@@ -88,11 +92,11 @@ class Lama():
         original_shape = image.shape[2:]
         l_tensor_image = K.resize(image, (512, 512))
         l_tensor_mask = K.resize(mask, (512, 512))
-
+        d_kernel = torch.ones(13, 13).to(self.device)
         # Preprocess mask
         l_tensor_mask = (l_tensor_mask > 0.05).to(torch.float32)
         for _ in range(3):
-            l_tensor_mask = M.dilation(l_tensor_mask, torch.ones(13, 13))
+            l_tensor_mask = M.dilation(l_tensor_mask, d_kernel)
 
         l_result = self.model(l_tensor_image.to(self.device), l_tensor_mask.to(self.device))
 
