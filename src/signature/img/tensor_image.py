@@ -12,11 +12,10 @@ from urllib.parse import urlparse
 class TensorImage(torch.Tensor):
 
     def __init__(self, data):
-        self.original_data = data
+        self = data
 
     def __new__(cls, data, *args, **kwargs):
-        new_data = cls.__format(data)
-        return super().__new__(cls, new_data, *args, **kwargs) # type: ignore
+        return super().__new__(cls, cls.__format(data), *args, **kwargs) # type: ignore
 
     @staticmethod
     def __format(tensor: torch.Tensor) -> torch.Tensor:
@@ -35,8 +34,7 @@ class TensorImage(torch.Tensor):
 
         if new_tensor.dtype not in [torch.float16, torch.float32, torch.float64]:
             new_tensor = (new_tensor / 255.0).to(torch.float32)
-        device = K.utils.get_cuda_or_mps_device_if_available()
-        return new_tensor.to(device)
+        return new_tensor.to(K.utils.get_cuda_or_mps_device_if_available())
 
     def get_numpy_image(self) -> NDArray[np.float32]:
         return K.utils.tensor_to_image(self)
@@ -85,52 +83,15 @@ class TensorImage(torch.Tensor):
         new_data = K.utils.image_to_tensor(new_data)
         return new_data
 
-    @property
-    def size(self) -> tuple[int, int]:
-        """
-        Returns:
-            The size of the tensor image.
-        """
-        return (self.height, self.width)
-    @property
-    def width(self) -> int:
-        """
-        Returns:
-            The width of the tensor image.
-        """
-        return self.shape[3]
-
-    @property
-    def height(self) -> int:
-        """
-        Returns:
-            The height of the tensor image.
-        """
-        return self.shape[2]
-
-    @property
-    def channels(self) -> int:
-        """
-        Returns:
-            The number of channels of the tensor image.
-        """
-        return self.shape[1]
-    @property
-    def batch_size(self) -> int:
-        """
-        Returns:
-            The number of batches of the tensor image.
-        """
-        return self.shape[0]
-
     def get_comfy(self) -> torch.Tensor:
         """
         Returns:
             The tensor image in comfy format.
         """
-        if self.channels in [3, 4]:
+        channels = self.shape[1]
+        if channels in [3, 4]:
             new_array = self.permute(0, 2, 3, 1)
-        elif self.channels == 1:
+        elif channels == 1:
             new_array = self.squeeze(0)
         else:
             raise ValueError("Invalid number of channels")

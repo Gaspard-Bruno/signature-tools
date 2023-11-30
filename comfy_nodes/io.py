@@ -4,12 +4,12 @@ from .categories import IO_CAT
 
 def image_array_to_tensor(x: TensorImage):
     image = x.get_comfy()
-    mask = torch.ones((x.batch_size,
+    mask = torch.ones((x.shape[0],
                        1,
-                       x.height,
-                       x.width),
+                       x.shape[2],
+                       x.shape[3]),
                       dtype=torch.float32)
-    if x.channels == 4:
+    if x.shape[1] == 4:
         mask = image[:, :, :, -1]
     return (image, mask, )
 
