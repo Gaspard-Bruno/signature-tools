@@ -96,6 +96,8 @@ class TensorImage(torch.Tensor):
         else:
             raise ValueError("Invalid number of channels")
         return new_array.cpu()
+    
+    
 
     def save(self,output_path: str | bytes, extension: str = ".png"):
         with open(output_path, "wb") as file:
