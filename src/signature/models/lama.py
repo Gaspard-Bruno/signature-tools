@@ -2,6 +2,7 @@ import torch
 import torch.nn.functional as F
 import kornia.geometry.transform as K
 import kornia.morphology as M
+from kornia.color import rgba_to_rgb
 from kornia.utils import get_cuda_or_mps_device_if_available
 from .helper import (
     load_jit_model,
@@ -12,10 +13,13 @@ MODEL_SHA = "344c77bbcb158f17dd143070d1e789f38a66c04202311ae3a258ef66667a9ea9"
 
 class Lama():
     def __init__(self, device: str | None = None):
-        self.device = get_cuda_or_mps_device_if_available()
+        self.device = device or get_cuda_or_mps_device_if_available()
         self.model = load_jit_model(MODEL_URL, self.device, MODEL_SHA).eval()
 
     def forward(self, image: torch.Tensor, mask: torch.Tensor, mode: str = 'CROP'):
+        input_image = image.to(self.device)
+        if image.shape[1] == 4:
+            input_image = rgba_to_rgb(input_image)
         input_image = image.to(self.device)
         input_mask = mask.to(self.device)
         if mode == 'FULL':

@@ -1,12 +1,11 @@
 import cv2
 import torch
 from .categories import PROCESSORS_CAT
-from ..src.signature.img.tensor_image import TensorImage
-# from ..src.signature.models.lineart_anime import LineArtAnime
-from ..src.signature.models.lineart import LineArt
-from ..src.signature.models.pidinet import PidiNet
-from ..src.signature.models.hednet import HedNet
-from kornia.color import grayscale_to_rgb, rgb_to_grayscale
+from ..img.tensor_image import TensorImage
+from ..models.lineart import LineArt
+from ..models.pidinet import PidiNet
+from ..models.hednet import HedNet
+from kornia.color import grayscale_to_rgb
 from kornia.geometry.transform import resize, pyrup
 import kornia as K
 

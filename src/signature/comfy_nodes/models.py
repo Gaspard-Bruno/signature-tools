@@ -1,8 +1,8 @@
 import torch
 from .categories import MODELS_CAT
-from  ..src.signature.img.tensor_image import TensorImage
-from ..src.signature.models.lama import Lama
-from ..src.signature.models.isnet import IsNet
+from ..img.tensor_image import TensorImage
+from ..models.lama import Lama
+from ..models.salient_object_detection import SalientObjectDetection
 # from ..src.signature.models.fba_matting import FbaMatting
 class MagicEraser:
     def __init__(self):
@@ -28,25 +28,36 @@ class MagicEraser:
 
         return (highres,)
 
-class SalientObjectDetection:
+class BackgroundRemoval:
     def __init__(self):
-        self.model = IsNet()
+        self.model_name = "isnet"
+        self.model: SalientObjectDetection | None = None
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore
         return {"required": {
+            "model_name": (['rmbg14', 'isnet_general'],),
             "image": ("IMAGE",),
             }}
-    RETURN_TYPES = ("MASK",)
+    RETURN_TYPES = ("IMAGE", "MASK")
+    RETURN_NAMES = ("rgba", "mask")
     FUNCTION = "process"
     CATEGORY = MODELS_CAT
 
-    def process(self, image: torch.Tensor):
+
+    def process(self, image: torch.Tensor, model_name: str):
+        if model_name != self.model_name or self.model is None:
+            self.model = SalientObjectDetection(model_name=model_name)
+            self.model_name = model_name
+
         input_image = TensorImage.from_comfy(image)
-        outputs = self.model.forward(input_image)
-        outputs = TensorImage(outputs).get_comfy()
-        return (outputs,)
-    
+        output_masks = self.model.forward(input_image)
+
+        output_cutouts = torch.cat((input_image, output_masks), dim=1)
+        output_masks = TensorImage(output_masks).get_comfy()
+        output_cutouts = TensorImage(output_cutouts).get_comfy()
+        return (output_cutouts, output_masks,)
+
 # class ImageMatting:
 #     def __init__(self):
 #         self.model = FbaMatting()
@@ -72,7 +83,7 @@ class SalientObjectDetection:
 #         return (outputs,)
 
 NODE_CLASS_MAPPINGS = {
-    "Magic Eraser (LaMa)": MagicEraser,
-    "Salient Object Detection (IsNet)": SalientObjectDetection,
+    "Magic Eraser": MagicEraser,
+    "Background Removal": BackgroundRemoval,
     # "Image Matting (Fba Matting)": ImageMatting,
 }

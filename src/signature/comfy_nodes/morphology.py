@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 from .categories import MORPHOLOGY_CAT
 from kornia.morphology import erosion, dilation
-from  ..src.signature.img.tensor_image import TensorImage
+from ..img.tensor_image import TensorImage
 
 class ImageErosion:
     def __init__(self):

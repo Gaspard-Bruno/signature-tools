@@ -1,6 +1,6 @@
 import torch
 from .categories import TRANSFORM_CAT
-from  ..src.signature.img.tensor_image import TensorImage
+from ..img.tensor_image import TensorImage
 from kornia.geometry.transform import rescale, resize
 from kornia.geometry.bbox import bbox_generator
 from kornia.color import rgb_to_rgba, rgba_to_rgb

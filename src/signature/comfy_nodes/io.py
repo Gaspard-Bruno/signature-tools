@@ -1,4 +1,4 @@
-from  ..src.signature.img.tensor_image import TensorImage
+from ..img.tensor_image import TensorImage
 import torch
 from .categories import IO_CAT
 
