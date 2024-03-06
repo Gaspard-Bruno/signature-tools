@@ -21,7 +21,11 @@ class AutoCrop:
 
     FUNCTION = "process"
     CATEGORY = TRANSFORM_CAT
-    def process(self, image: torch.Tensor, mask: torch.Tensor, padding: int):
+    def process(self,
+                image: torch.Tensor,
+                mask: torch.Tensor,
+                padding: int):
+
         img_tensor = TensorImage.from_comfy(image)
         mask_tensor = TensorImage.from_comfy(mask)
         img_tensor = rgb_to_rgba(img_tensor, 1.0)
@@ -98,9 +102,16 @@ class Rescale:
     RETURN_TYPES = ("IMAGE", "MASK",)
     FUNCTION = "process"
     CATEGORY = TRANSFORM_CAT
-    def process(self, image: torch.Tensor | None = None, mask: torch.Tensor | None = None, factor: float = 2.0, interpolation: str = 'nearest', antialias: bool = True):
-        output_image = torch.ones(1, 1, 1, 1)
-        output_mask = torch.ones(1, 1, 1, 1)
+    def process(self,
+                image: torch.Tensor | None = None,
+                mask: torch.Tensor | None = None,
+                factor: float = 2.0,
+                interpolation: str = 'nearest',
+                antialias: bool = True):
+
+        default_output = TensorImage(torch.zeros(1, 1, 1, 1)).get_comfy()
+        output_image = default_output
+        output_mask = default_output
         tuple_factor = (factor, factor)
         if isinstance(image, torch.Tensor):
             img_tensor = TensorImage.from_comfy(image)
@@ -137,9 +148,18 @@ class Resize:
     RETURN_TYPES = ("IMAGE", "MASK",)
     FUNCTION = "process"
     CATEGORY = TRANSFORM_CAT
-    def process(self, image: torch.Tensor | None = None, mask: torch.Tensor | None = None, width:int = 512, height:int=512, keep_aspect_ratio: bool = False, interpolation: str = 'nearest', antialias: bool = True):
-        output_image = torch.ones(1, 1, 1, 1)
-        output_mask = torch.ones(1, 1, 1, 1)
+    def process(self,
+                image: torch.Tensor | None = None,
+                mask: torch.Tensor | None = None,
+                width:int = 512,
+                height:int=512,
+                keep_aspect_ratio: bool = False,
+                interpolation: str = 'nearest',
+                antialias: bool = True):
+
+        default_output = TensorImage(torch.zeros(1, 1, 1, 1)).get_comfy()
+        output_image = default_output
+        output_mask = default_output
 
         size = (height, width)
         if isinstance(image, torch.Tensor):
@@ -187,13 +207,14 @@ class Rotate:
         pass
 
     @classmethod
-    def INPUT_TYPES(s): # type: ignore
+    def INPUT_TYPES(cls):
         return {
             "required": {},
             "optional": {
                 "image": ("IMAGE", {"default": None}),
                 "mask": ("MASK", {"default": None}),
                 "angle": ("FLOAT", {"default": 0.0, "min": 0, "max": 360.0, "step": 1.0}),
+                "zoom_to_fit": ("BOOLEAN", {"default": False}),
             },
         }
 
@@ -201,23 +222,41 @@ class Rotate:
     FUNCTION = "process"
     CATEGORY = TRANSFORM_CAT
 
-    def process(self, image: torch.Tensor | None = None, mask: torch.Tensor | None = None, angle: float = 0.0):
-
-        output_image = torch.ones(1, 1, 1, 1)
-        output_mask = torch.ones(1, 1, 1, 1)
+    def process(self, image: torch.Tensor | None = None, mask: torch.Tensor | None = None, angle: float = 0.0, zoom_to_fit: bool = False):
+        default_output = TensorImage(torch.zeros(1, 1, 1, 1)).get_comfy()
+        output_image = default_output
+        output_mask = default_output
 
         if isinstance(image, torch.Tensor):
             img_tensor = TensorImage.from_comfy(image)
-            N = image.shape[0]
-            angle_tensor = torch.tensor([angle]*N, device=img_tensor.device, dtype=img_tensor.dtype)
+            angle_tensor = torch.tensor([angle], device=img_tensor.device, dtype=img_tensor.dtype)
             output_image = rotate(img_tensor, angle=angle_tensor)
+
+            if zoom_to_fit:
+                # Calculate new size to fit rotated image
+                new_height = img_tensor.shape[-2] * torch.abs(torch.sin(angle_tensor)) + img_tensor.shape[-1] * torch.abs(torch.cos(angle_tensor))
+                new_width = img_tensor.shape[-1] * torch.abs(torch.sin(angle_tensor)) + img_tensor.shape[-2] * torch.abs(torch.cos(angle_tensor))
+                new_size = (int(new_height.max()), int(new_width.max()))
+
+                # Resize the rotated image to fit
+                output_image = resize(output_image, size=new_size)
+
             output_image = TensorImage(output_image).get_comfy()
 
         if isinstance(mask, torch.Tensor):
             mask_tensor = TensorImage.from_comfy(mask)
-            N = mask.shape[0]
-            angle_tensor = torch.tensor([angle]*N, device=mask_tensor.device, dtype=mask_tensor.dtype)
+            angle_tensor = torch.tensor([angle], device=mask_tensor.device, dtype=mask_tensor.dtype)
             output_mask = rotate(mask_tensor, angle=angle_tensor)
+
+            if zoom_to_fit:
+                # Calculate new size to fit rotated mask
+                new_height = mask_tensor.shape[-2] * torch.abs(torch.sin(angle_tensor)) + mask_tensor.shape[-1] * torch.abs(torch.cos(angle_tensor))
+                new_width = mask_tensor.shape[-1] * torch.abs(torch.sin(angle_tensor)) + mask_tensor.shape[-2] * torch.abs(torch.cos(angle_tensor))
+                new_size = (int(new_height.max()), int(new_width.max()))
+
+                # Resize the rotated mask to fit
+                output_mask = resize(output_mask, size=new_size)
+
             output_mask = TensorImage(output_mask).get_comfy()
 
         return (output_image, output_mask,)
