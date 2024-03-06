@@ -1,38 +1,12 @@
 import torch
 from .categories import TRANSFORM_CAT
 from ..img.tensor_image import TensorImage
-from kornia.geometry.transform import rescale, resize
-from kornia.geometry.bbox import bbox_generator
+from kornia.geometry.transform import rescale, resize, rotate
 from kornia.color import rgb_to_rgba, rgba_to_rgb
 from torchvision.ops import masks_to_boxes
-import numpy as np
 
 
-def extract_bbox(mask: torch.Tensor):
-    plain_mask = mask.squeeze(0)
-
-    bbox = masks_to_boxes(plain_mask)
-    h, w = plain_mask
-
-    x = torch.any(mask, dim=1)
-    y = torch.any(mask, dim=2)
-
-    x_min = torch.argmax(x.float(), dim=1)
-    x_max = h - torch.argmax(x.float().flip(dims=[1]), dim=1)
-
-    y_min = torch.argmax(y.float(), dim=1)
-    y_max = w - torch.argmax(y.float().flip(dims=[1]), dim=1)
-
-    x_start = torch.tensor([x_min, x_max])
-    y_start = torch.tensor([y_min, y_max])
-    width = torch.tensor([0, w])
-    height = torch.tensor([0, h])
-    box = bbox_generator(x_start, y_start, width, height)
-
-    return box
-
-
-class AutoCropImage:
+class AutoCrop:
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore
@@ -106,96 +80,154 @@ class AutoCropImage:
         return (output_img, output_mask, use_min_x, use_min_y, use_width, use_height)
 
 
-class RescaleImage:
+class Rescale:
     def __init__(self):
         pass
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore
-        return {"required": {
-            "image": ("IMAGE",),
-            "factor": ("FLOAT", {"default": 2.0, "min": 0.001, "max": 100.0, "step": 0.01}),
-            "interpolation": (['nearest', 'linear', 'bilinear', 'bicubic', 'trilinear', 'area'],),
-            "antialias": ("BOOLEAN", {"default": True},),
-            }}
-    RETURN_TYPES = ("IMAGE",)
+        return {
+            "required": {
+                },
+            "optional": {
+                "image": ("IMAGE", {"default": None}),
+                "mask": ("MASK", {"default": None}),
+                "factor": ("FLOAT", {"default": 2.0, "min": 0.001, "max": 100.0, "step": 0.01}),
+                "interpolation": (['nearest', 'linear', 'bilinear', 'bicubic', 'trilinear', 'area'],),
+                "antialias": ("BOOLEAN", {"default": True}),
+                },
+            }
+    RETURN_TYPES = ("IMAGE", "MASK",)
     FUNCTION = "process"
     CATEGORY = TRANSFORM_CAT
-    def process(self, image: torch.Tensor, factor, interpolation, antialias):
-        image = image.transpose(3, 1)
-        output = rescale(image, factor=factor, interpolation=interpolation, antialias=antialias)
-        output = output.transpose(3, 1)
-        return (output,)
+    def process(self, image: torch.Tensor | None = None, mask: torch.Tensor | None = None, factor: float = 2.0, interpolation: str = 'nearest', antialias: bool = True):
+        output_image = torch.ones(1, 1, 1, 1)
+        output_mask = torch.ones(1, 1, 1, 1)
+        tuple_factor = (factor, factor)
+        if isinstance(image, torch.Tensor):
+            img_tensor = TensorImage.from_comfy(image)
+            output_image = rescale(img_tensor, factor=tuple_factor, interpolation=interpolation, antialias=antialias)
+            output_image = TensorImage(output_image).get_comfy()
 
-class ResizeImage:
+        if isinstance(mask, torch.Tensor):
+            mask_tensor = TensorImage.from_comfy(mask)
+            output_mask = rescale(mask_tensor, factor=tuple_factor, interpolation=interpolation, antialias=antialias)
+            output_mask = TensorImage(output_mask).get_comfy()
+
+        return (output_image, output_mask,)
+
+
+class Resize:
     def __init__(self):
         pass
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore
-        return {"required": {
-            "image": ("IMAGE",),
-            "width": ("INT", {"default": 512}),
-            "height": ("INT", {"default": 512}),
-            "interpolation": (['nearest', 'linear', 'bilinear', 'bicubic', 'trilinear', 'area'],),
-            "antialias": ("BOOLEAN", {"default": True},),
-            }}
-    RETURN_TYPES = ("IMAGE",)
+        return {
+            "required": {},
+            "optional": {
+                "image": ("IMAGE", {"default": None}),
+                "mask": ("MASK", {"default": None}),
+                "width": ("INT", {"default": 512}),
+                "height": ("INT", {"default": 512}),
+                "keep_aspect_ratio": ("BOOLEAN", {"default": False}),
+                "interpolation": (['nearest', 'linear', 'bilinear', 'bicubic', 'trilinear', 'area'],),
+                "antialias": ("BOOLEAN", {"default": True},),
+            },
+        }
+
+    RETURN_TYPES = ("IMAGE", "MASK",)
     FUNCTION = "process"
     CATEGORY = TRANSFORM_CAT
-    def process(self, image: torch.Tensor, width, height, interpolation, antialias):
-        image = image.transpose(3, 1)
-        output = resize(image, size=(width, height), interpolation=interpolation, antialias=antialias)
-        output = output.transpose(3, 1)
-        return (output,)
-class RescaleMask:
+    def process(self, image: torch.Tensor | None = None, mask: torch.Tensor | None = None, width:int = 512, height:int=512, keep_aspect_ratio: bool = False, interpolation: str = 'nearest', antialias: bool = True):
+        output_image = torch.ones(1, 1, 1, 1)
+        output_mask = torch.ones(1, 1, 1, 1)
+
+        size = (height, width)
+        if isinstance(image, torch.Tensor):
+            img_tensor = TensorImage.from_comfy(image)
+
+            if keep_aspect_ratio:
+                image_height, image_width = img_tensor.shape[-2:]
+                aspect_ratio = image_width / image_height
+
+                if width > height:
+                    new_width = width
+                    new_height = int(new_width / aspect_ratio)
+                else:
+                    new_height = height
+                    new_width = int(new_height * aspect_ratio)
+
+                size = (new_height, new_width)
+
+            output_image = resize(img_tensor, size=size, interpolation=interpolation, antialias=antialias)
+            output_image = TensorImage(output_image).get_comfy()
+
+        if isinstance(mask, torch.Tensor):
+            mask_tensor = TensorImage.from_comfy(mask)
+
+            if keep_aspect_ratio:
+                mask_height, mask_width = mask_tensor.shape[-2:]
+                aspect_ratio = mask_width / mask_height
+
+                if width > height:
+                    new_width = width
+                    new_height = int(new_width / aspect_ratio)
+                else:
+                    new_height = height
+                    new_width = int(new_height * aspect_ratio)
+
+                size = (new_height, new_width)
+
+            output_mask = resize(mask_tensor, size=size, interpolation=interpolation, antialias=antialias)
+            output_mask = TensorImage(output_mask).get_comfy()
+
+        return (output_image, output_mask,)
+
+class Rotate:
     def __init__(self):
         pass
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore
-        return {"required": {
-            "mask": ("MASK",),
-            "factor": ("FLOAT", {"default": 2.0, "min": 0.001, "max": 100.0, "step": 0.01}),
-            "interpolation": (['nearest', 'linear', 'bilinear', 'bicubic', 'trilinear', 'area'],),
-            "antialias": ("BOOLEAN", {"default": True},),
-            }}
-    RETURN_TYPES = ("MASK",)
+        return {
+            "required": {},
+            "optional": {
+                "image": ("IMAGE", {"default": None}),
+                "mask": ("MASK", {"default": None}),
+                "angle": ("FLOAT", {"default": 0.0, "min": 0, "max": 360.0, "step": 1.0}),
+            },
+        }
+
+    RETURN_TYPES = ("IMAGE", "MASK",)
     FUNCTION = "process"
     CATEGORY = TRANSFORM_CAT
-    def process(self, mask: torch.Tensor, factor, interpolation, antialias):
-        #mask = mask.transpose(3, 1)
-        mask = torch.stack([mask])
-        output = rescale(mask, factor=factor, interpolation=interpolation, antialias=antialias)
-        output = output[0]
-        return (output,)
 
-class ResizeMask:
-    def __init__(self):
-        pass
+    def process(self, image: torch.Tensor | None = None, mask: torch.Tensor | None = None, angle: float = 0.0):
 
-    @classmethod
-    def INPUT_TYPES(s): # type: ignore
-        return {"required": {
-            "mask": ("MASK",),
-            "width": ("INT", {"default": 512}),
-            "height": ("INT", {"default": 512}),
-            "interpolation": (['nearest', 'linear', 'bilinear', 'bicubic', 'trilinear', 'area'],),
-            "antialias": ("BOOLEAN", {"default": True},),
-            }}
-    RETURN_TYPES = ("MASK",)
-    FUNCTION = "process"
-    CATEGORY = TRANSFORM_CAT
-    def process(self, mask: torch.Tensor, width, height, interpolation, antialias):
-        mask = torch.stack([mask])
-        output = resize(mask, size=(width, height), interpolation=interpolation, antialias=antialias)
-        output = output[0]
-        return (output,)
+        output_image = torch.ones(1, 1, 1, 1)
+        output_mask = torch.ones(1, 1, 1, 1)
+
+        if isinstance(image, torch.Tensor):
+            img_tensor = TensorImage.from_comfy(image)
+            N = image.shape[0]
+            angle_tensor = torch.tensor([angle]*N, device=img_tensor.device, dtype=img_tensor.dtype)
+            output_image = rotate(img_tensor, angle=angle_tensor)
+            output_image = TensorImage(output_image).get_comfy()
+
+        if isinstance(mask, torch.Tensor):
+            mask_tensor = TensorImage.from_comfy(mask)
+            print(mask_tensor.shape)
+            N = mask.shape[0]
+            angle_tensor = torch.tensor([angle]*N, device=mask_tensor.device, dtype=mask_tensor.dtype)
+            output_mask = rotate(mask_tensor, angle=angle_tensor)
+            output_mask = TensorImage(output_mask).get_comfy()
+
+        return (output_image, output_mask,)
 
 NODE_CLASS_MAPPINGS = {
-    "Rescale Image": RescaleImage,
-    "Resize Image": ResizeImage,
-    "Rescale Mask": RescaleMask,
-    "Resize Mask": ResizeMask,
-    "Auto Crop Image": AutoCropImage,
+    "Rotate": Rotate,
+    "Rescale": Rescale,
+    "Resize": Resize,
+    "Auto Crop": AutoCrop,
 }

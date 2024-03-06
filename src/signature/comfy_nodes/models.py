@@ -2,7 +2,9 @@ import torch
 from .categories import MODELS_CAT
 from ..img.tensor_image import TensorImage
 from ..models.lama import Lama
+from comfy.model_patcher import ModelPatcher # type: ignore
 from ..models.salient_object_detection import SalientObjectDetection
+from kornia.utils import get_cuda_or_mps_device_if_available
 # from ..src.signature.models.fba_matting import FbaMatting
 class MagicEraser:
     def __init__(self):
@@ -58,32 +60,7 @@ class BackgroundRemoval:
         output_cutouts = TensorImage(output_cutouts).get_comfy()
         return (output_cutouts, output_masks,)
 
-# class ImageMatting:
-#     def __init__(self):
-#         self.model = FbaMatting()
-
-#     @classmethod
-#     def INPUT_TYPES(s): # type: ignore
-#         return {"required": {
-#             "image": ("IMAGE",),
-#             "trimap": ("TRIMAP",),
-#             }}
-#     RETURN_TYPES = ("MASK",)
-#     FUNCTION = "process"
-#     CATEGORY = MODELS_CAT
-
-
-#     def process(self, image: torch.Tensor, trimap: torch.Tensor):
-#         input_image = TensorImage.from_comfy(image)
-#         input_trimap = trimap.permute(0, 3, 1, 2)
-#         #print(input_trimap.shape)
-#         #outputs = torch.zeros(input_trimap.shape[0], 1, input_trimap.shape[2], input_trimap.shape[3]).to(input_trimap.device)
-#         outputs = self.model.forward(input_image, input_trimap)
-#         outputs = TensorImage(outputs).get_comfy()
-#         return (outputs,)
-
 NODE_CLASS_MAPPINGS = {
     "Magic Eraser": MagicEraser,
     "Background Removal": BackgroundRemoval,
-    # "Image Matting (Fba Matting)": ImageMatting,
 }
