@@ -261,7 +261,48 @@ class Rotate:
 
         return (output_image, output_mask,)
 
+class Cutout:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "image": ("IMAGE",),
+                "mask": ("MASK",),
+            },
+        }
+
+    RETURN_TYPES = ("IMAGE", "IMAGE")
+    RETURN_NAMES = ("rgb", "rgba")
+    FUNCTION = "process"
+    CATEGORY = TRANSFORM_CAT
+
+    def process(self, image: torch.Tensor, mask: torch.Tensor):
+        tensor_image = TensorImage.from_comfy(image)
+        tensor_mask = TensorImage.from_comfy(mask)
+
+        if tensor_image.shape != tensor_mask.shape:
+            tensor_image = resize(tensor_image, size=tensor_mask.shape[-2:])
+
+        num_channels = tensor_image.shape[1]
+        if num_channels == 4:
+            tensor_image = rgba_to_rgb(tensor_image)
+            num_channels = 3
+
+        comfy_image_rgba = torch.cat((tensor_image, tensor_mask), dim=1)
+        comfy_image_rgb = tensor_image.clone()
+        comfy_image_rgb = comfy_image_rgb * tensor_mask.repeat(1, num_channels, 1, 1)
+       
+
+        comfy_image_rgb = TensorImage(comfy_image_rgb).get_comfy()
+        comfy_image_rgba = TensorImage(comfy_image_rgba).get_comfy()
+
+        return comfy_image_rgb, comfy_image_rgba
+
 NODE_CLASS_MAPPINGS = {
+    "Cutout": Cutout,
     "Rotate": Rotate,
     "Rescale": Rescale,
     "Resize": Resize,
