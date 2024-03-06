@@ -53,8 +53,6 @@ class AutoCrop:
         use_width = int(torch.max(width).item())
         use_height = int(torch.max(height).item())
 
-        print(use_min_x, use_min_y, use_width, use_height)
-
         alpha_mask = torch.ones((B, C, H, W), device=mask_tensor.device)
         alpha_mask[:,3,:,:] = mask_tensor
 
@@ -217,7 +215,6 @@ class Rotate:
 
         if isinstance(mask, torch.Tensor):
             mask_tensor = TensorImage.from_comfy(mask)
-            print(mask_tensor.shape)
             N = mask.shape[0]
             angle_tensor = torch.tensor([angle]*N, device=mask_tensor.device, dtype=mask_tensor.dtype)
             output_mask = rotate(mask_tensor, angle=angle_tensor)
