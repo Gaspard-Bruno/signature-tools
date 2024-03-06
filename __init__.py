@@ -1,5 +1,5 @@
 try:
-    from .src.signature.comfy_nodes import enhance, color, filters, io, transfrom, models, morphology, misc, processor
+    from .src.signature.comfy_nodes import enhance, transform, color, filters, io, models, morphology, misc, processor
 except:
     print(f"Error importing modules")
 
@@ -10,13 +10,13 @@ except:
         print("Installation failed. Please install the dependencies manually.")
 
     # Retry the import after attempting installation
-    from .src.signature.comfy_nodes import enhance, color, filters, io, transfrom, models, morphology, misc, processor
+    from .src.signature.comfy_nodes import enhance, transform, color, filters, io, models, morphology, misc, processor
 
 NODE_CLASS_MAPPINGS = {
     **processor.NODE_CLASS_MAPPINGS,
     **models.NODE_CLASS_MAPPINGS,
     **io.NODE_CLASS_MAPPINGS,
-    **transfrom.NODE_CLASS_MAPPINGS,
+    **transform.NODE_CLASS_MAPPINGS,
     **color.NODE_CLASS_MAPPINGS,
     **enhance.NODE_CLASS_MAPPINGS,
     **filters.NODE_CLASS_MAPPINGS,
