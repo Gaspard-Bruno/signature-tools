@@ -78,7 +78,7 @@ class PlatformInputNumber():
                 "short_description": ("STRING", {"default": ""}),
                 "subtype": (['float','int'],),
                 "required": ("BOOLEAN", {"default": True}),
-                "value": (any,),
+                "value": ("FLOAT", {"default": 0}),
                 },
             }
     RETURN_TYPES = (any,)
@@ -128,7 +128,7 @@ class PlatformOutput():
                 "title": title,
                 "short_description": short_description,
                 "type": "text" if subtype == "string" else "number",
-                "value": str(value)
+                "value": value
             }
             results.append(output)
             return  { "ui": {"signature_output": results} }
