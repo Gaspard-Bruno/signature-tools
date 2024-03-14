@@ -75,13 +75,14 @@ class MaskGaussianBlur:
                              "radius": ("INT", {"default": 13}),
                              "sigma": ("FLOAT", {"default": 10.5}),
                              "interations": ("INT", {"default": 1}),
+                             "only_outline": ("BOOLEAN", {"default": False}),
                              }
                 }
     RETURN_TYPES = ("MASK",)
     FUNCTION = "process"
     CATEGORY = FILTER_CAT
 
-    def process(self, image: torch.Tensor, radius, sigma, interations):
+    def process(self, image: torch.Tensor, radius:int, sigma:float, interations:int, only_outline:bool):
         if radius % 2 == 0:
             radius += 1
         in_kernel_size = (radius, radius)
@@ -90,11 +91,12 @@ class MaskGaussianBlur:
 
         interations = max(1, interations)
         for _ in range(interations):
-            step = gaussian_blur2d(step,
+            blurred = gaussian_blur2d(step,
                                     kernel_size=in_kernel_size,
                                     sigma=in_sigma,
                                     border_type='reflect',
                                     separable=True)
+            step = torch.where(step == 0, blurred, step) if only_outline else blurred
         output = TensorImage(step).get_comfy()
         return (output,)
 

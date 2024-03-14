@@ -25,6 +25,7 @@ NODE_CLASS_MAPPINGS = {
     **platform_io.NODE_CLASS_MAPPINGS,
 }
 
+WEB_DIRECTORY = "./src/signature/comfy_nodes/web"
 __all__ = ['NODE_CLASS_MAPPINGS']
 
 MANIFEST = {
