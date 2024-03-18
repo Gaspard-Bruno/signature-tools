@@ -4,7 +4,6 @@ from .categories import PLATFROM_IO_CAT
 import torch
 import os
 from datetime import datetime
-from ComfyUI.folder_paths import get_output_directory # type: ignore
 class AnyType(str):
   def __ne__(self, __value: object) -> bool:
     return False
@@ -116,7 +115,8 @@ class PlatformOutput():
             raise ValueError(f"Unsupported output type: {subtype}")
         results = []
         if subtype == "image" or subtype == "mask":
-            output_dir = get_output_directory()
+            base_comfy_dir = os.getcwd().split('custom_nodes')[0]
+            output_dir = os.path.join(base_comfy_dir, 'output')
             tensor_images = TensorImage.from_comfy(value)
             for img in tensor_images:
 
