@@ -1,7 +1,10 @@
+import tempfile
 from ..img.tensor_image import TensorImage
 from .categories import PLATFROM_IO_CAT
 import torch
-
+import os
+from datetime import datetime
+from ComfyUI.folder_paths import get_output_directory # type: ignore
 class AnyType(str):
   def __ne__(self, __value: object) -> bool:
     return False
@@ -108,22 +111,29 @@ class PlatformOutput():
     CATEGORY = PLATFROM_IO_CAT
 
     def apply(self, value, title:str, short_description:str, subtype:str):
+        supported_types = ["image", "mask", "int", "float", "string"]
+        if subtype not in supported_types:
+            raise ValueError(f"Unsupported output type: {subtype}")
         results = []
         if subtype == "image" or subtype == "mask":
+            output_dir = get_output_directory()
             tensor_images = TensorImage.from_comfy(value)
             for img in tensor_images:
-                b64_output = TensorImage(img).get_base64()
-                output = {
-                    "title": title,
-                    "short_description": short_description,
-                    "type": "image",
-                    "value": str(b64_output)
-                }
 
-                results.append(output)
-            return  { "ui": {"signature_output": results} }
+                current_time_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+                random_str = str(torch.randint(0, 100000, (1,)).item())
+                file_name = f"signature_{current_time_str}_{random_str}.png"
+                save_path = os.path.join(output_dir, file_name)
 
-        elif subtype == "int" or subtype == "float" or subtype == "string":
+                if TensorImage(img).save(save_path):
+                    output = {
+                        "title": title,
+                        "short_description": short_description,
+                        "type": "image",
+                        "value": file_name,
+                    }
+                    results.append(output)
+        else:
             output = {
                 "title": title,
                 "short_description": short_description,
@@ -131,9 +141,9 @@ class PlatformOutput():
                 "value": value
             }
             results.append(output)
-            return  { "ui": {"signature_output": results} }
 
-        raise ValueError(f"Unsupported output type: {subtype}")
+
+        return  { "ui": {"signature_output": results} }
 
 
 NODE_CLASS_MAPPINGS = {
