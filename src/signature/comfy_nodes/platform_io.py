@@ -124,13 +124,17 @@ class PlatformOutput():
                 random_str = str(torch.randint(0, 100000, (1,)).item())
                 file_name = f"signature_{current_time_str}_{random_str}.png"
                 save_path = os.path.join(output_dir, file_name)
-
-                if TensorImage(img).save(save_path):
+                output_img = TensorImage(img)
+                thumbnail_img = output_img.get_resized(768)
+                is_image_saved = output_img.save(save_path)
+                is_thumbnail_saved = thumbnail_img.save(save_path.replace(".png", "_thumbnail.png"))
+                if is_image_saved and is_thumbnail_saved:
                     output = {
                         "title": title,
                         "short_description": short_description,
                         "type": "image",
                         "value": file_name,
+                        "thumbnail": file_name.replace(".png", "_thumbnail.png")
                     }
                     results.append(output)
         else:

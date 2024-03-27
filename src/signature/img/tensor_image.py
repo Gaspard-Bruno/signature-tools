@@ -8,6 +8,7 @@ import imageio as iio
 
 from numpy.typing import NDArray
 from urllib.parse import urlparse
+from kornia.geometry.transform import rescale, resize
 
 class TensorImage(torch.Tensor):
 
@@ -113,6 +114,25 @@ class TensorImage(torch.Tensor):
         else:
             raise ValueError("Invalid number of channels")
         return new_array.cpu()
+    def get_resized(self, max_size:int) -> 'TensorImage':
+
+        image_height, image_width = self.shape[-2:]
+        aspect_ratio = image_width / image_height
+        size = (int(max_size / aspect_ratio), max_size)
+        height, width = size
+        if width > height:
+            new_width = width
+            new_height = int(new_width / aspect_ratio)
+        else:
+            new_height = height
+            new_width = int(new_height * aspect_ratio)
+
+        size = (new_height, new_width)
+
+        return TensorImage(resize(self, size))
+
+    def get_scaled(self, scale:float) -> 'TensorImage':
+        return TensorImage(rescale(self, scale))
 
     def save(self, output_path: str | bytes, extension: str = ".png") -> bool:
         try :
