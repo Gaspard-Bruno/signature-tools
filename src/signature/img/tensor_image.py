@@ -45,7 +45,7 @@ class TensorImage(torch.Tensor):
 
     def get_numpy_image(self) -> NDArray[np.float32]:
         return K.utils.tensor_to_image(self)
-    
+
     def get_rgb_or_rgba(self) -> 'TensorImage':
         if self.shape[1] == 1:
             return TensorImage(self.repeat(1, 3, 1, 1))

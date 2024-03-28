@@ -37,6 +37,41 @@ class Bitwise():
         return (output_mask,)
 
 
+class Ones():
+
+    @classmethod
+    def INPUT_TYPES(s): # type: ignore
+        return {"required": {"width": ("INT", {"default": 1024}),
+                             "height": ("INT", {"default": 1024}),
+                             "channels": ("INT", {"default": 1, "min": 1, "max": 4}),
+                             "batch": ("INT", {"default": 1})}}
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "process"
+    CATEGORY = MISC_CAT
+
+    def process(self, width: int, height: int, channels: int, batch: int):
+        step = torch.ones((batch, channels, height, width))
+        output_image = TensorImage(step).get_comfy()
+        return (output_image,)
+
+
+class Zeros():
+
+        @classmethod
+        def INPUT_TYPES(s): # type: ignore
+            return {"required": {"width": ("INT", {"default": 1024}),
+                                "height": ("INT", {"default": 1024}),
+                                "channels": ("INT", {"default": 1}),
+                                "batch": ("INT", {"default": 1})}}
+        RETURN_TYPES = ("IMAGE",)
+        FUNCTION = "process"
+        CATEGORY = MISC_CAT
+
+        def process(self, width: int, height: int, channels: int, batch: int):
+            step = torch.zeros((batch, channels, height, width))
+            output_image = TensorImage(step).get_comfy()
+            return (output_image,)
+
 class OnesLike():
 
     @classmethod
@@ -88,6 +123,8 @@ class MaskBinaryFilter():
 
 NODE_CLASS_MAPPINGS = { 
     "Bitwise": Bitwise,
+    "Ones": Ones,
+    "Zeros": Zeros,
     "Ones Like": OnesLike,
     "Zeros Like": ZerosLike,
     "Mask Binary Filter": MaskBinaryFilter,
