@@ -1,9 +1,11 @@
-import tempfile
 from ..img.tensor_image import TensorImage
 from .categories import PLATFROM_IO_CAT
 import torch
 import os
 from datetime import datetime
+
+
+BASE_COMFY_DIR = os.getcwd().split('custom_nodes')[0]
 class AnyType(str):
   def __ne__(self, __value: object) -> bool:
     return False
@@ -71,6 +73,25 @@ class PlatformInputText():
         else:
             raise ValueError(f"Unsupported input type: {type(value)}")
 
+class PlatformInputSelector():
+
+    @classmethod
+    def INPUT_TYPES(s): # type: ignore
+        return {
+            "required": {
+                "selected": ("INT", {"default": 0, "min": 0}),
+                "input_0": ("STRING", {"default": ""}),
+                },
+            }
+    RETURN_TYPES = (any,)
+    FUNCTION = "apply"
+    CATEGORY = PLATFROM_IO_CAT
+
+    def apply(self, **kwargs):
+        items = [value for key, value in kwargs.items() if key.startswith("input_")]
+        item = items[kwargs["selected"]]
+        return (item,)
+
 class PlatformInputNumber():
     @classmethod
     def INPUT_TYPES(s): # type: ignore
@@ -88,7 +109,6 @@ class PlatformInputNumber():
     CATEGORY = PLATFROM_IO_CAT
 
     def apply(self, value:float, title:str, short_description:str, subtype: str, required:str):
-
         return (value,)
 
 
@@ -115,8 +135,8 @@ class PlatformOutput():
             raise ValueError(f"Unsupported output type: {subtype}")
         results = []
         if subtype == "image" or subtype == "mask":
-            base_comfy_dir = os.getcwd().split('custom_nodes')[0]
-            output_dir = os.path.join(base_comfy_dir, 'output')
+
+            output_dir = os.path.join(BASE_COMFY_DIR, 'output')
             tensor_images = TensorImage.from_comfy(value)
             for img in tensor_images:
 
@@ -154,6 +174,7 @@ NODE_CLASS_MAPPINGS = {
     "signature_input_image": PlatformInputImage,
     "signature_input_text": PlatformInputText,
     "signature_input_number": PlatformInputNumber,
+    # "signature_input_selector": PlatformInputSelector,
 
     "signature_output": PlatformOutput,
 }

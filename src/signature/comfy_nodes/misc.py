@@ -2,6 +2,10 @@ from ..img.tensor_image import TensorImage
 from .categories import MISC_CAT
 import torch
 
+class AnyType(str):
+  def __ne__(self, __value: object) -> bool:
+    return False
+any = AnyType("*")
 
 
 class Bitwise():
@@ -121,7 +125,23 @@ class MaskBinaryFilter():
         output = TensorImage(step).get_comfy()
         return (output,)
 
+class AnyToString():
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s): # type: ignore
+        return {"required": {
+            "input": (any,),
+            }}
+    RETURN_TYPES = ("STRING",)
+    FUNCTION = "process"
+    CATEGORY = MISC_CAT
+    def process(self, input):
+        return (str(input),)
+
 NODE_CLASS_MAPPINGS = { 
+    "Any to String": AnyToString,
     "Bitwise": Bitwise,
     "Ones": Ones,
     "Zeros": Zeros,

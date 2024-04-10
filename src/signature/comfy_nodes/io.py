@@ -1,6 +1,10 @@
 from ..img.tensor_image import TensorImage
 import torch
 from .categories import IO_CAT
+import os
+import json
+
+BASE_COMFY_DIR = os.getcwd().split('custom_nodes')[0]
 
 def image_array_to_tensor(x: TensorImage):
     image = x.get_comfy()
@@ -52,12 +56,55 @@ class Base64FromImage():
     def process(self, image):
         images = TensorImage.from_comfy(image)
         output = images.get_base64()
-        print(output)
         return (output,)
 
+
+class LoadFile():
+
+    @classmethod
+    def INPUT_TYPES(s): # type: ignore
+        return {
+            "required": {
+                "value": ('STRING', {'default': ''}),
+            },
+    }
+
+    RETURN_TYPES = ("FILE",)
+    FUNCTION = "process"
+    CATEGORY = IO_CAT
+
+    def process(self, value: str):
+        data = value.split('&&') if '&&' in value else [value]
+        for i in range(len(data)):
+            json_str = data[i]
+            data[i] = json.loads(json_str)
+        return (data,)
+
+class LoadFolder():
+
+    @classmethod
+    def INPUT_TYPES(s): # type: ignore
+        return {
+            "required": {
+                "value": ('STRING', {'default': ''}),
+            },
+    }
+
+    RETURN_TYPES = ("FILE",)
+    FUNCTION = "process"
+    CATEGORY = IO_CAT
+
+    def process(self, value: str):
+        data = value.split('&&') if '&&' in value else [value]
+        for i in range(len(data)):
+            json_str = data[i]
+            data[i] = json.loads(json_str)
+        return (data,)
 
 NODE_CLASS_MAPPINGS = {
     "Image from Web": ImageFromWeb,
     "Image from Base64": ImageFromBase64,
     "Base64 from Image": Base64FromImage,
+    "Load File": LoadFile,
+    "Load Folder": LoadFolder,
 }

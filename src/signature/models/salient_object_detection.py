@@ -13,6 +13,9 @@ MODEL_ISNET_SHA = "0689398c252bd1275392ea5300204ced42a94181fa15cc7a0cbd42752e5a9
 MODEL_RMBG14_URL = "https://huggingface.co/gaspardbruno/RMBG-1.4/resolve/main/RMBG14.pt"
 MODEL_RMBG14_SHA = "17193bd5ad929dc5e265c4f6671493221c73396decd29e0d12fb008bd9692b9f"
 
+MODEL_BIREFNET_URL = "https://huggingface.co/gaspardbruno/BiRefNet/resolve/main/birefnet.pt"
+MODEL_BIREFNET_SHA = "06d70f52ee04ab6140c54d56cd597b924a6dfd06ff95d1b9265b5fac13435e92"
+
 class SalientObjectDetection():
     def __init__(self, model_name: str, device: str|None = None):
         self.device = device or get_cuda_or_mps_device_if_available()
@@ -20,8 +23,10 @@ class SalientObjectDetection():
             self.model = load_jit_model(MODEL_ISNET_URL, self.device, MODEL_ISNET_SHA).eval()
         elif model_name == "rmbg14":
             self.model = load_jit_model(MODEL_RMBG14_URL, self.device, MODEL_RMBG14_SHA).eval()
+        # elif model_name == "birefnet":
+        #     self.model = load_jit_model(MODEL_BIREFNET_URL, self.device, MODEL_BIREFNET_SHA).eval()
         else :
-            raise ValueError("Model name should be either 'isnet' or 'rmbg14'")
+            raise ValueError("The model_name should be one of ['rmbg14', 'birefnet','isnet_general']")
         self.infer_size = (1024, 1024)
 
     def forward(self, image: torch.Tensor):

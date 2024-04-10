@@ -4,6 +4,7 @@ const NODES = {
     "signature_input_image": "Input Image",
     "signature_input_text": "Input Text",
     "signature_input_number": "Input Number",
+    "signature_input_selector": "Input Selector",
     "signature_output": "Output",
 };
 
@@ -121,6 +122,22 @@ function inputNumber(node, widget) {
     }
 }
 
+function inputSelector(node, widget) {
+    setNodeColors(node, COLOR_THEMES['purple']);
+
+    const widgetType = widget.value.toUpperCase();
+
+
+    const widgets = node.widgets || []
+    let valueWidget = null;
+    // check last widget
+    last_widget = widgets[widgets.length - 1];
+    // if the value is different the ""
+    if (last_widget.value !== "") {
+        node.addInput("input_" + widgets.length, widgetType);
+    }
+}
+
 
 const nodeWidgetHandlers = {
     "signature_input_image": {
@@ -131,6 +148,9 @@ const nodeWidgetHandlers = {
     },
     "signature_input_number": {
         'subtype': inputNumber
+    },
+    "signature_input_selector": {
+        'subtype': inputSelector
     },
     "signature_output": {
         'subtype': output
