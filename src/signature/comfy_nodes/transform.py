@@ -294,7 +294,6 @@ class Cutout:
         comfy_image_rgba = torch.cat((tensor_image, tensor_mask), dim=1)
         comfy_image_rgb = tensor_image.clone()
         comfy_image_rgb = comfy_image_rgb * tensor_mask.repeat(1, num_channels, 1, 1)
-       
 
         comfy_image_rgb = TensorImage(comfy_image_rgb).get_comfy()
         comfy_image_rgba = TensorImage(comfy_image_rgba).get_comfy()

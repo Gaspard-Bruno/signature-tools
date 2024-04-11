@@ -43,9 +43,6 @@ class TensorImage(torch.Tensor):
 
         return new_tensor.to(K.utils.get_cuda_or_mps_device_if_available())
 
-    def get_numpy_image(self) -> NDArray[np.float32]:
-        return K.utils.tensor_to_image(self)
-
     def get_rgb_or_rgba(self) -> 'TensorImage':
         if self.shape[1] == 1:
             return TensorImage(self.repeat(1, 3, 1, 1))
@@ -142,6 +139,9 @@ class TensorImage(torch.Tensor):
             return True
         except FileExistsError:
             return False
+
+    def get_numpy_image(self) -> NDArray[np.float32]:
+        return K.utils.tensor_to_image(self)
 
     def get_bytes(self, extension: str = ".png") -> bytes:
         np_array = (self.get_numpy_image() * 255.0).astype(np.uint8)
