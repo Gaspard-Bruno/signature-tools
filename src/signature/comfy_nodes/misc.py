@@ -107,8 +107,7 @@ class ZerosLike():
         return (output_image,)
 
 class MaskBinaryFilter():
-    def __init__(self):
-        pass
+
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore
@@ -126,8 +125,7 @@ class MaskBinaryFilter():
         return (output,)
 
 class AnyToString():
-    def __init__(self):
-        pass
+
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore

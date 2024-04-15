@@ -6,8 +6,7 @@ from kornia.morphology import erosion, dilation
 from ..img.tensor_image import TensorImage
 
 class ImageErosion:
-    def __init__(self):
-        pass
+
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore
@@ -29,8 +28,7 @@ class ImageErosion:
         return (output,)
 
 class ImageDilation:
-    def __init__(self):
-        pass
+
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore
@@ -53,8 +51,7 @@ class ImageDilation:
 
 
 class MaskErosion:
-    def __init__(self):
-        pass
+
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore
@@ -77,8 +74,7 @@ class MaskErosion:
 
 
 class MaskDilation:
-    def __init__(self):
-        pass
+
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore
@@ -101,8 +97,7 @@ class MaskDilation:
 
 
 class CreateTrimap:
-    def __init__(self):
-        pass
+
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore

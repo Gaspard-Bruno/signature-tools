@@ -1,5 +1,5 @@
 try:
-    from .src.signature.comfy_nodes import platform_io, enhance, transform, filters, io, models, morphology, misc, processor, augmentation
+    from .src.signature.comfy_nodes import platform_io, enhance, transform, filters, io, models, morphology, misc, processor, augmentation, lora
 except:
     print(f"Error importing modules")
 
@@ -10,7 +10,7 @@ except:
         print("Installation failed. Please install the dependencies manually.")
 
     # Retry the import after attempting installation
-    from .src.signature.comfy_nodes import platform_io, enhance, transform, filters, io, models, morphology, misc, processor, augmentation
+    from .src.signature.comfy_nodes import platform_io, enhance, transform, filters, io, models, morphology, misc, processor, augmentation, lora
 
 NODE_CLASS_MAPPINGS = {
     **processor.NODE_CLASS_MAPPINGS,
@@ -23,6 +23,7 @@ NODE_CLASS_MAPPINGS = {
     **misc.NODE_CLASS_MAPPINGS,
     **platform_io.NODE_CLASS_MAPPINGS,
     **augmentation.NODE_CLASS_MAPPINGS,
+    **lora.NODE_CLASS_MAPPINGS,
 }
 
 WEB_DIRECTORY = "./src/signature/comfy_nodes/web"

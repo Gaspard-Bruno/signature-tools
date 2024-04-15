@@ -4,8 +4,7 @@ from kornia.enhance import adjust_brightness, adjust_saturation, equalize, equal
 import torch
 
 class AdjustBrightness:
-    def __init__(self):
-        pass
+
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore
@@ -23,8 +22,7 @@ class AdjustBrightness:
 
 
 class AdjustSaturation:
-    def __init__(self):
-        pass
+
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore
@@ -43,8 +41,7 @@ class AdjustSaturation:
         return (output,)
 
 class Equalize:
-    def __init__(self):
-        pass
+
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore
@@ -63,8 +60,7 @@ class Equalize:
 
 
 class EqualizeClahe:
-    def __init__(self):
-        pass
+
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore

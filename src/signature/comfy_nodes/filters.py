@@ -5,8 +5,7 @@ from kornia.filters import gaussian_blur2d, unsharp_mask
 import torch
 
 class ImageGaussianBlur:
-    def __init__(self):
-        pass
+
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore
@@ -37,8 +36,7 @@ class ImageGaussianBlur:
         return (output,)
 
 class ImageUnsharpMask:
-    def __init__(self):
-        pass
+
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore
@@ -66,8 +64,7 @@ class ImageUnsharpMask:
 
 
 class MaskGaussianBlur:
-    def __init__(self):
-        pass
+
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore

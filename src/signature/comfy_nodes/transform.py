@@ -83,8 +83,7 @@ class AutoCrop:
 
 
 class Rescale:
-    def __init__(self):
-        pass
+
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore
@@ -127,8 +126,7 @@ class Rescale:
 
 
 class Resize:
-    def __init__(self):
-        pass
+
 
     @classmethod
     def INPUT_TYPES(s): # type: ignore
@@ -203,8 +201,7 @@ class Resize:
         return (output_image, output_mask,)
 
 class Rotate:
-    def __init__(self):
-        pass
+
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -262,8 +259,7 @@ class Rotate:
         return (output_image, output_mask,)
 
 class Cutout:
-    def __init__(self):
-        pass
+
 
     @classmethod
     def INPUT_TYPES(cls):
