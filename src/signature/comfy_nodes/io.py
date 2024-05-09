@@ -58,7 +58,6 @@ class Base64FromImage():
         output = images.get_base64()
         return (output,)
 
-
 class LoadFile():
 
     @classmethod

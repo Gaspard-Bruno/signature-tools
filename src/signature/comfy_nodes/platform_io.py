@@ -147,14 +147,14 @@ class PlatformOutput():
                 output_img = TensorImage(img)
                 thumbnail_img = output_img.get_resized(768)
                 is_image_saved = output_img.save(save_path)
-                is_thumbnail_saved = thumbnail_img.save(save_path.replace(".png", "_thumbnail.png"))
+                is_thumbnail_saved = thumbnail_img.save(save_path.replace(".png", "_thumbnail.jpeg"))
                 if is_image_saved and is_thumbnail_saved:
                     output = {
                         "title": title,
                         "short_description": short_description,
                         "type": "image",
                         "value": file_name,
-                        "thumbnail": file_name.replace(".png", "_thumbnail.png")
+                        "thumbnail": file_name.replace(".png", "_thumbnail.jpeg")
                     }
                     results.append(output)
         else:
