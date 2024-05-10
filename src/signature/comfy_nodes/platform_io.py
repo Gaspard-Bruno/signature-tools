@@ -3,6 +3,7 @@ from .categories import PLATFROM_IO_CAT
 import torch
 import os
 from datetime import datetime
+import json
 
 
 BASE_COMFY_DIR = os.getcwd().split('custom_nodes')[0]
@@ -120,7 +121,8 @@ class PlatformOutput():
             "required": {
                 "title": ("STRING", {"default": "Output Image"}),
                 "short_description": ("STRING", {"default": ""}),
-                "subtype": (['image', 'mask', 'int', 'float', 'string'],),
+                "subtype": (['image', 'mask', 'int', 'float', 'string', 'dict'],),
+                "metadata": ("STRING", {"multiline": True}),
                 "value": (any,),
                 },
             }
@@ -129,13 +131,12 @@ class PlatformOutput():
     FUNCTION = "apply"
     CATEGORY = PLATFROM_IO_CAT
 
-    def apply(self, value, title:str, short_description:str, subtype:str):
-        supported_types = ["image", "mask", "int", "float", "string"]
+    def apply(self, value, title: str, short_description: str, subtype: str, metadata: str = ''):
+        supported_types = ["image", "mask", "int", "float", "string", "dict"]
         if subtype not in supported_types:
             raise ValueError(f"Unsupported output type: {subtype}")
         results = []
         if subtype == "image" or subtype == "mask":
-
             output_dir = os.path.join(BASE_COMFY_DIR, 'output')
             tensor_images = TensorImage.from_comfy(value)
             for img in tensor_images:
@@ -152,8 +153,9 @@ class PlatformOutput():
                     output = {
                         "title": title,
                         "short_description": short_description,
-                        "type": "image",
+                        "type": subtype,
                         "value": file_name,
+                        "metadata": metadata,
                         "thumbnail": file_name.replace(".png", "_thumbnail.jpeg")
                     }
                     results.append(output)
@@ -161,8 +163,9 @@ class PlatformOutput():
             output = {
                 "title": title,
                 "short_description": short_description,
-                "type": "text" if subtype == "string" else "number",
-                "value": value
+                "type": subtype,
+                "value": json.dumps(value) if subtype == "dict" else value,
+                "metadata": metadata
             }
             results.append(output)
 
