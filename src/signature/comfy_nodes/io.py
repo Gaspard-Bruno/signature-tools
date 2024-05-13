@@ -74,9 +74,18 @@ class LoadFile():
 
     def process(self, value: str):
         data = value.split('&&') if '&&' in value else [value]
+        input_folder = os.path.join(BASE_COMFY_DIR, "input")
         for i in range(len(data)):
             json_str = data[i]
             data[i] = json.loads(json_str)
+            item = data[i]
+            if isinstance(item, dict):
+                name = item.get('name', None)
+                if name is None:
+                    continue
+                item['name'] = os.path.join(input_folder, name)
+                data[i] = item
+
         return (data,)
 
 class LoadFolder():
@@ -95,9 +104,17 @@ class LoadFolder():
 
     def process(self, value: str):
         data = value.split('&&') if '&&' in value else [value]
+        input_folder = os.path.join(BASE_COMFY_DIR, "input")
         for i in range(len(data)):
             json_str = data[i]
             data[i] = json.loads(json_str)
+            item = data[i]
+            if isinstance(item, dict):
+                name = item.get('name', None)
+                if name is None:
+                    continue
+                item['name'] = os.path.join(input_folder, name)
+                data[i] = item
         return (data,)
 
 NODE_CLASS_MAPPINGS = {

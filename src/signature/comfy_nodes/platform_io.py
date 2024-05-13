@@ -7,6 +7,7 @@ import json
 
 
 BASE_COMFY_DIR = os.getcwd().split('custom_nodes')[0]
+
 class AnyType(str):
   def __ne__(self, __value: object) -> bool:
     return False
@@ -122,7 +123,7 @@ class PlatformOutput():
                 "title": ("STRING", {"default": "Output Image"}),
                 "short_description": ("STRING", {"default": ""}),
                 "subtype": (['image', 'mask', 'int', 'float', 'string', 'dict'],),
-                "metadata": ("STRING", {"multiline": True}),
+                "metadata": ("STRING", {"default": "", "multiline": True}),
                 "value": (any,),
                 },
             }
