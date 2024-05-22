@@ -136,42 +136,52 @@ class PlatformOutput():
         supported_types = ["image", "mask", "int", "float", "string", "dict"]
         if subtype not in supported_types:
             raise ValueError(f"Unsupported output type: {subtype}")
+
+        output_dir = os.path.join(BASE_COMFY_DIR, 'output')
+        current_time_str = datetime.now().strftime("%Y%m%d_%H%M%S")
         results = []
-        if subtype == "image" or subtype == "mask":
-            output_dir = os.path.join(BASE_COMFY_DIR, 'output')
+        thumbnail_size = 768
+        if subtype in ["image", "mask"]:
             tensor_images = TensorImage.from_comfy(value)
             for img in tensor_images:
-
-                current_time_str = datetime.now().strftime("%Y%m%d_%H%M%S")
                 random_str = str(torch.randint(0, 100000, (1,)).item())
                 file_name = f"signature_{current_time_str}_{random_str}.png"
                 save_path = os.path.join(output_dir, file_name)
+
                 output_img = TensorImage(img)
-                thumbnail_img = output_img.get_resized(768)
-                is_image_saved = output_img.save(save_path)
-                is_thumbnail_saved = thumbnail_img.save(save_path.replace(".png", "_thumbnail.jpeg"))
-                if is_image_saved and is_thumbnail_saved:
-                    output = {
+                width, height = output_img.size()[-2:]
+
+                # Resize only if either dimension is greater than 768
+                if width > thumbnail_size or height > thumbnail_size:
+                    thumbnail_img = output_img.get_resized(thumbnail_size)
+                    thumbnail_path = save_path.replace(".png", "_thumbnail.jpeg")
+                    thumbnail_saved = thumbnail_img.save(thumbnail_path)
+                else:
+                    thumbnail_path = save_path
+                    thumbnail_saved = True
+
+                image_saved = output_img.save(save_path)
+
+                if image_saved and thumbnail_saved:
+                    results.append({
                         "title": title,
                         "short_description": short_description,
                         "type": subtype,
-                        "value": file_name,
                         "metadata": metadata,
-                        "thumbnail": file_name.replace(".png", "_thumbnail.jpeg")
-                    }
-                    results.append(output)
+                        "value": file_name,
+                        "thumbnail": thumbnail_path if thumbnail_saved else None
+                    })
         else:
-            output = {
+            value_json = json.dumps(value) if subtype == "dict" else value
+            results.append({
                 "title": title,
                 "short_description": short_description,
                 "type": subtype,
-                "value": json.dumps(value) if subtype == "dict" else value,
-                "metadata": metadata
-            }
-            results.append(output)
+                "metadata": metadata,
+                "value": value_json
+            })
 
-
-        return  { "ui": {"signature_output": results} }
+        return {"ui": {"signature_output": results}}
 
 
 NODE_CLASS_MAPPINGS = {
