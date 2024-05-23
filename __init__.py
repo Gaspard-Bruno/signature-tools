@@ -1,5 +1,5 @@
 try:
-    from .src.signature.comfy_nodes import platform_io, enhance, transform, filters, io, models, morphology, misc, processor, augmentation, lora
+    from .src.signature.comfy_nodes import platform_io, enhance, transform, filters, io, models, morphology, misc, processor, augmentation, lora, lora_stacker
 except:
     print(f"Error importing modules")
 
@@ -24,6 +24,7 @@ NODE_CLASS_MAPPINGS = {
     **platform_io.NODE_CLASS_MAPPINGS,
     **augmentation.NODE_CLASS_MAPPINGS,
     **lora.NODE_CLASS_MAPPINGS,
+    **lora_stacker.NODE_CLASS_MAPPINGS,
 }
 
 WEB_DIRECTORY = "./src/signature/comfy_nodes/web"
