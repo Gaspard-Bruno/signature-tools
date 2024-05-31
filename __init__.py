@@ -10,7 +10,7 @@ except:
         print("Installation failed. Please install the dependencies manually.")
 
     # Retry the import after attempting installation
-    from .src.signature.comfy_nodes import platform_io, enhance, transform, filters, io, models, morphology, misc, processor, augmentation, lora
+    from .src.signature.comfy_nodes import platform_io, enhance, transform, filters, io, models, morphology, misc, processor, augmentation, lora, lora_stacker
 
 NODE_CLASS_MAPPINGS = {
     **processor.NODE_CLASS_MAPPINGS,

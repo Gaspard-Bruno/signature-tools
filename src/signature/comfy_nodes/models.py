@@ -3,6 +3,7 @@ from .categories import MODELS_CAT
 from ..img.tensor_image import TensorImage
 from ..models.lama import Lama
 from ..models.salient_object_detection import SalientObjectDetection
+from ..models.seemore import SeeMore
 
 class MagicEraser:
     def __init__(self):
@@ -27,6 +28,27 @@ class MagicEraser:
         highres = TensorImage(highres).get_comfy()
 
         return (highres,)
+
+class Unblur:
+    def __init__(self):
+        self.model = SeeMore()
+
+    @classmethod
+    def INPUT_TYPES(s): # type: ignore
+        return {"required": {
+            "image": ("IMAGE",),
+            }}
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "process"
+    CATEGORY = MODELS_CAT
+
+
+    def process(self, image: torch.Tensor):
+        input_image = TensorImage.from_comfy(image)
+        output_image = self.model.forward(input_image)
+
+        output_cutouts = TensorImage(output_image).get_comfy()
+        return (output_cutouts,)
 
 class BackgroundRemoval:
     def __init__(self):
@@ -61,4 +83,5 @@ class BackgroundRemoval:
 NODE_CLASS_MAPPINGS = {
     "Magic Eraser": MagicEraser,
     "Background Removal": BackgroundRemoval,
+    "Unblur": Unblur,
 }
