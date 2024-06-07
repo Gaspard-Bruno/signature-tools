@@ -1,4 +1,5 @@
 from ..img.tensor_image import TensorImage
+from kornia.color import rgba_to_rgb, rgb_to_hls, rgb_to_hsv, hsv_to_rgb, hls_to_rgb
 from .categories import MISC_CAT
 import torch
 
@@ -125,8 +126,6 @@ class MaskBinaryFilter():
         return (output,)
 
 class AnyToString():
-
-
     @classmethod
     def INPUT_TYPES(s): # type: ignore
         return {"required": {
@@ -138,6 +137,81 @@ class AnyToString():
     def process(self, input):
         return (str(input),)
 
+class RGB2HSL():
+    @classmethod
+    def INPUT_TYPES(s): # type: ignore
+        return {"required": {"image": ("IMAGE",)}}
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "process"
+    CATEGORY = MISC_CAT
+
+    def process(self, image: torch.Tensor):
+        input_image = TensorImage.from_comfy(image)
+        if input_image.shape[1] == 4:
+            input_image = rgba_to_rgb(input_image)
+        value = rgb_to_hls(input_image)
+        output_image = TensorImage(value).get_comfy()
+        return (output_image,)
+
+class RGB2HSV():
+    @classmethod
+    def INPUT_TYPES(s): # type: ignore
+        return {"required": {"image": ("IMAGE",)}}
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "process"
+    CATEGORY = MISC_CAT
+
+    def process(self, image: torch.Tensor):
+        input_image = TensorImage.from_comfy(image)
+        if input_image.shape[1] == 4:
+            input_image = rgba_to_rgb(input_image)
+        value = rgb_to_hsv(input_image)
+        output_image = TensorImage(value).get_comfy()
+        return (output_image,)
+
+class HSL2RGB():
+    @classmethod
+    def INPUT_TYPES(s): # type: ignore
+        return {"required": {"image": ("IMAGE",)}}
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "process"
+    CATEGORY = MISC_CAT
+
+    def process(self, image: torch.Tensor):
+        input_image = TensorImage.from_comfy(image)
+        value = hls_to_rgb(input_image)
+        output_image = TensorImage(value).get_comfy()
+        return (output_image,)
+
+class HSV2RGB():
+    @classmethod
+    def INPUT_TYPES(s): # type: ignore
+        return {"required": {"image": ("IMAGE",)}}
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "process"
+    CATEGORY = MISC_CAT
+
+    def process(self, image: torch.Tensor):
+        input_image = TensorImage.from_comfy(image)
+        value = hsv_to_rgb(input_image)
+        output_image = TensorImage(value).get_comfy()
+        return (output_image,)
+
+class MaskDistance():
+    @classmethod
+    def INPUT_TYPES(s): # type: ignore
+        return {"required": {"mask_0": ("MASK",), "mask_1": ("MASK",)}}
+    RETURN_TYPES = ("FLOAT",)
+    FUNCTION = "process"
+    CATEGORY = MISC_CAT
+
+    def process(self, mask_0: torch.Tensor, mask_1: torch.Tensor):
+        tensor1 = TensorImage.from_comfy(mask_0)
+        tensor2 = TensorImage.from_comfy(mask_1)
+        dist = torch.Tensor((tensor1 - tensor2).pow(2).sum(3).sqrt().mean())
+        return (dist,)
+
+
 NODE_CLASS_MAPPINGS = { 
     "Any to String": AnyToString,
     "Bitwise": Bitwise,
@@ -146,4 +220,9 @@ NODE_CLASS_MAPPINGS = {
     "Ones Like": OnesLike,
     "Zeros Like": ZerosLike,
     "Mask Binary Filter": MaskBinaryFilter,
+    "Rgb2Hsl": RGB2HSL,
+    "Rgb2Hsv": RGB2HSV,
+    "Hsl2Rgb": HSL2RGB,
+    "Hsv2Rgb": HSV2RGB,
+    "MaskDistance": MaskDistance
 }
