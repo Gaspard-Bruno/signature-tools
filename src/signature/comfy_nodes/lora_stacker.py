@@ -27,7 +27,7 @@ class SignatureLoraStacker:
         loras = [None for _ in lora_dicts]
 
         for idx, lora_dict in enumerate(lora_dicts):
-            loras[idx] = (lora_dict["lora_name"], lora_dict["lora_weight"], lora_dict["lora_weight"])
+            loras[idx] = (lora_dict["lora_name"], lora_dict["lora_weight"], lora_dict["lora_weight"]) # type: ignore
 
         # If lora_stack is not None, extend the loras list with lora_stack
         if lora_stack is not None:

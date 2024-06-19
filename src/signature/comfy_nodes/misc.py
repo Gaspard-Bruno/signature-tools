@@ -125,7 +125,7 @@ class MaskBinaryFilter():
         output = TensorImage(step).get_comfy()
         return (output,)
 
-class AnyToString():
+class Any2String():
     @classmethod
     def INPUT_TYPES(s): # type: ignore
         return {"required": {
@@ -136,6 +136,18 @@ class AnyToString():
     CATEGORY = MISC_CAT
     def process(self, input):
         return (str(input),)
+
+class Any2Any():
+    @classmethod
+    def INPUT_TYPES(s): # type: ignore
+        return {"required": {
+            "input": (any,),
+            }}
+    RETURN_TYPES = (any,)
+    FUNCTION = "process"
+    CATEGORY = MISC_CAT
+    def process(self, input):
+        return (input,)
 
 class RGB2HSL():
     @classmethod
@@ -213,7 +225,8 @@ class MaskDistance():
 
 
 NODE_CLASS_MAPPINGS = { 
-    "Any to String": AnyToString,
+    "Any2String": Any2String,
+    "Any2Any": Any2Any,
     "Bitwise": Bitwise,
     "Ones": Ones,
     "Zeros": Zeros,
